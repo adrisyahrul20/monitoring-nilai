@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GuruController;
-use App\Http\Controllers\Admin\JadwalUjianController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\MapelController;
+use App\Http\Controllers\Admin\NilaiController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Guest\LandingController;
 use Illuminate\Support\Facades\Route;
@@ -13,11 +13,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LandingController::class, 'index'])->name('home-page');
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    Route::prefix('dashboard')->name('dashboard.')->controller(DashboardController::class)->group(function () {
+
+    Route::prefix('nilai')->name('nilai.')->controller(NilaiController::class)->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/nilai', 'nilai')->name('mapel');
+        Route::get('/data-table', 'datatable')->name('datatable');
+        Route::post('/store', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/delete', 'destroy')->name('destroy');
     });
 
-    Route::prefix('jadwal')->name('jadwal.')->controller(JadwalUjianController::class)->group(function () {
+    Route::prefix('siswa')->name('siswa.')->controller(SiswaController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/data-table', 'datatable')->name('datatable');
         Route::post('/store', 'store')->name('store');

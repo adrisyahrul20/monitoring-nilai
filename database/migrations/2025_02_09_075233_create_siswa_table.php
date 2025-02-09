@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('guru', function (Blueprint $table) {
+        Schema::create('siswa', function (Blueprint $table) {
             $table->id();
-            $table->string('nip')->unique()->index();
+            $table->string('nis')->unique()->index();
             $table->string('nama');
             $table->string('templahir');
             $table->date('tgllahir');
             $table->enum('jk', ['lk', 'pr', 'nd'])->default('nd');
             $table->longText('alamat')->nullable();
-            $table->string('nohp');
-            $table->string('email');
+            $table->unsignedBigInteger('idkelas')->nullable();
+            $table->foreign('idkelas')->references('id')->on('kelas')->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('guru');
+        Schema::dropIfExists('siswa');
     }
 };

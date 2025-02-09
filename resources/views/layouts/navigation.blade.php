@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('admin.dashboard.index') }}">
+                    <a href="{{ route('admin.nilai.index') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
@@ -15,10 +15,13 @@
                     {{-- <x-nav-link :href="route('admin.dashboard.index')" :active="request()->routeIs('admin.dashboard.index')">
                         Dasbor
                     </x-nav-link> --}}
-                    <x-nav-link :href="route('admin.jadwal.index')" :active="request()->routeIs('admin.jadwal.index')">
-                        Jadwal Ujian
+                    <x-nav-link :href="route('admin.nilai.index')" :active="request()->routeIs('admin.nilai*')">
+                        Nilai Siswa
                     </x-nav-link>
                     @if (Auth::user()->role === 'admin')
+                        <x-nav-link :href="route('admin.siswa.index')" :active="request()->routeIs('admin.siswa.index')">
+                            Data Siswa
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.mapel.index')" :active="request()->routeIs('admin.mapel.index')">
                             Mata Pelajaran
                         </x-nav-link>
@@ -92,9 +95,9 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('admin.dashboard.index')" :active="request()->routeIs('admin.dashboard.index')">
+            {{-- <x-responsive-nav-link :href="route('admin.nilai.index')" :active="request()->routeIs('admin.dashboard.index')">
                 {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            </x-responsive-nav-link> --}}
         </div>
 
         <!-- Responsive Settings Options -->

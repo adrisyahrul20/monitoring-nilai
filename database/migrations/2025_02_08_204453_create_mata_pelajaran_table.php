@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kdmapel')->unique()->index();
             $table->string('nmmapel');
+            $table->integer('tingkat_kelas');
             $table->longText('keterangan')->nullable();
             $table->unsignedBigInteger('idguru')->nullable();
             $table->foreign('idguru')->references('id')->on('guru')->onDelete('set null');

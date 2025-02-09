@@ -26,6 +26,6 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('admin.jadwal.index', absolute: false));
+        $response->assertRedirect(route('admin.nilai.index', absolute: false));
     }
 }

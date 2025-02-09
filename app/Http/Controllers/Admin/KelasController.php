@@ -36,6 +36,8 @@ class KelasController extends Controller
         return DataTables::of($this->table->orderBy('created_at', 'desc')->select([
             'id',
             'kdkls',
+            'tingkat_kelas',
+            'jurusan',
             'jmlbangku',
             'idguru',
         ]))
@@ -63,6 +65,8 @@ class KelasController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'kdkls' => 'required|string|max:255|unique:kelas,kdkls',
+                'tingkat_kelas' => 'required',
+                'jurusan' => 'required|string|max:255',
                 'jmlbangku' => 'required|integer',
                 'idguru' => 'required',
             ]);
@@ -73,6 +77,8 @@ class KelasController extends Controller
 
             $store = new $this->table;
             $store->kdkls = $request->kdkls;
+            $store->tingkat_kelas = $request->tingkat_kelas;
+            $store->jurusan = $request->jurusan;
             $store->jmlbangku = $request->jmlbangku;
             $store->idguru = $request->idguru;
             $store->save();
@@ -88,6 +94,8 @@ class KelasController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'kdkls' => 'required|string|max:255',
+                'tingkat_kelas' => 'required',
+                'jurusan' => 'required|string|max:255',
                 'jmlbangku' => 'required|integer',
                 'idguru' => 'required',
             ]);
@@ -98,6 +106,8 @@ class KelasController extends Controller
 
             $store = $this->table->find($request->id);
             $store->kdkls = $request->kdkls;
+            $store->tingkat_kelas = $request->tingkat_kelas;
+            $store->jurusan = $request->jurusan;
             $store->jmlbangku = $request->jmlbangku;
             $store->idguru = $request->idguru;
             $store->save();

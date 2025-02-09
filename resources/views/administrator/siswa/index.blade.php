@@ -1,26 +1,24 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-white">
         <div class="flex flex-col md:flex-row text-center justify-between gap-4">
-            <h1 class="text-xl md:text-2xl font-semibold">Data Mata Pelajaran</h1>
-            <button class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2 mb-4" id="addNewDataButton">Tambah
-                Mata Pelajaran</button>
+            <h1 class="text-xl md:text-2xl font-semibold">Data Siswa</h1>
+            <button class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2 mb-4" id="addNewDataButton">Siswa
+                Baru</button>
         </div>
         <table class="min-w-full bg-white divide-y divide-gray-200 border" id="dataTables">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kode
-                        Mata Pelajaran
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">NIS
                     </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Mata Pelajaran
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
                     </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tingkat
-                        Kelas
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis
+                        Kelamin</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas
                     </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat
                     </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Guru
-                        Pengampu</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action
                     </th>
                 </tr>
@@ -38,33 +36,52 @@
                 <input type="hidden" id="method" name="method">
 
                 <div class="flex flex-col w-full mb-2">
-                    <label for="kdmapel" class="block text-gray-700">Kode Mata Pelajaran</label>
-                    <input type="text" id="kdmapel" name="kdmapel" class="border shadow-sm rounded-md py-2 px-3">
+                    <label for="nis" class="block text-gray-700">NIS</label>
+                    <input type="text" id="nis" name="nis" class="border shadow-sm rounded-md py-2 px-3">
                 </div>
 
                 <div class="flex flex-col w-full mb-2">
-                    <label for="nmmapel" class="block text-gray-700">Nama Mata Pelajaran</label>
-                    <input type="text" id="nmmapel" name="nmmapel" class="border shadow-sm rounded-md py-2 px-3">
-                </div>
-
-                <div class="flex flex-col w-full mb-2">
-                    <label for="tingkat_kelas" class="block text-gray-700">Tingkat Kelas</label>
-                    <input type="number" id="tingkat_kelas" name="tingkat_kelas" min="1" max="3" class="border shadow-sm rounded-md py-2 px-3">
-                </div>
-
-                <div class="flex flex-col w-full mb-2">
-                    <label for="keterangan" class="block text-gray-700">Keterangan</label>
-                    <textarea id="keterangan" name="keterangan" class="border shadow-sm rounded-md py-2 px-3"></textarea>
+                    <label for="name" class="block text-gray-700">Nama</label>
+                    <input type="text" id="name" name="name" class="border shadow-sm rounded-md py-2 px-3">
                 </div>
 
                 <div class="flex flex-col w-full mb-4">
-                    <label for="idguru" class="block text-gray-700">Guru Pengampu</label>
-                    <select id="idguru" name="idguru" class="border shadow-sm rounded-md py-2 px-3">
-                        <option value="">Pilih Guru</option>
-                        @foreach ($dataGuru as $data)
-                            <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                    <label for="jenkel" class="block text-gray-700">Jenis Kelamin</label>
+                    <select id="jenkel" name="jenkel" class="border shadow-sm rounded-md py-2 px-3">
+                        <option value="">Pilih Jenkel</option>
+                        <option value="lk">Laki-laki</option>
+                        <option value="pr">Perempuan</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex flex-col w-full mb-2">
+                        <label for="templahir" class="block text-gray-700">Tempat Lahir</label>
+                        <input type="text" id="templahir" name="templahir"
+                            class="border shadow-sm rounded-md py-2 px-3">
+                    </div>
+
+                    <div class="flex flex-col w-full mb-2">
+                        <label for="tgllahir" class="block text-gray-700">Tanggal Lahir</label>
+                        <input type="date" id="tgllahir" name="tgllahir"
+                            max="{{ \Carbon\Carbon::now()->subYears(20)->format('Y-m-d') }}"
+                            class="border shadow-sm rounded-md py-2 px-3">
+                    </div>
+                </div>
+
+                <div class="flex flex-col w-full mb-4">
+                    <label for="idkelas" class="block text-gray-700">Kelas</label>
+                    <select id="idkelas" name="idkelas" class="border shadow-sm rounded-md py-2 px-3">
+                        <option value="">Pilih Kelas</option>
+                        @foreach ($dataKelas as $data)
+                            <option value="{{ $data->id }}">{{ $data->kdkls }}</option>
                         @endforeach
                     </select>
+                </div>
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="alamat" class="block text-gray-700">Alamat</label>
+                    <textarea id="alamat" name="alamat" class="border shadow-sm rounded-md py-2 px-3"></textarea>
                 </div>
 
                 <!-- Modal Buttons -->
@@ -81,7 +98,7 @@
     <script>
         $(function() {
             $('#dataTables').DataTable({
-                ajax: '{!! route('admin.mapel.datatable') !!}',
+                ajax: '{!! route('admin.siswa.datatable') !!}',
                 dom: '<"flex flex-row gap-2 md:items-center justify-between mb-4"<"flex items-center"l><"flex items-center"f>><"max-w-full h-fit overflow-x-auto md:overflow-x-visible"rt><"flex items-center justify-between mt-4"<""i><"flex items-center"p>>',
                 lengthMenu: [10, 25, 50],
                 pagingType: 'simple',
@@ -92,24 +109,24 @@
                         width: 40
                     },
                     {
-                        data: 'kdmapel',
-                        name: 'kdmapel'
+                        data: 'nis',
+                        name: 'nis'
                     },
                     {
-                        data: 'nmmapel',
-                        name: 'nmmapel'
+                        data: 'nama',
+                        name: 'nama'
                     },
                     {
-                        data: 'tingkat_kelas',
-                        name: 'tingkat_kelas'
+                        data: 'jkCast',
+                        name: 'jkCast'
                     },
                     {
-                        data: 'keterangan',
-                        name: 'keterangan'
+                        data: 'kelas',
+                        name: 'kelas'
                     },
                     {
-                        data: 'namaGuru',
-                        name: 'namaGuru'
+                        data: 'alamat',
+                        name: 'alamat'
                     },
                     {
                         data: 'action',
@@ -154,7 +171,7 @@
     <script>
         $(document).ready(function() {
             $('#addNewDataButton').click(function() {
-                $('#modalTitle').text('Tambah Data Mata Pelajaran');
+                $('#modalTitle').text('Tambah Data Siswa');
                 $('#dataModal').removeClass('hidden');
                 $("#method").val('POST');
                 $('#dataForm')[0].reset();
@@ -178,8 +195,8 @@
 
                 const method = $("#method").val() === 'PUT' ? 'PUT' :
                     'POST';
-                const url = method === "POST" ? "{{ route('admin.mapel.store') }}" :
-                    "{{ route('admin.mapel.update') }}";
+                const url = method === "POST" ? "{{ route('admin.siswa.store') }}" :
+                    "{{ route('admin.siswa.update') }}";
 
                 $.ajax({
                     url: url,
@@ -203,7 +220,7 @@
             $('table#dataTables tbody').on('click', 'td button', function(e) {
                 const action = $(this).attr("data-mode");
                 const data = $('#dataTables').DataTable().row($(this).parents('tr')).data();
-                $('#modalTitle').text('Ubah Data Mata Pelajaran');
+                $('#modalTitle').text('Ubah Data Siswa');
 
                 if (action === 'edit') {
                     populateForm(data);
@@ -218,11 +235,14 @@
 
             function populateForm(data) {
                 $("#recordId").val(data.id);
-                $("#kdmapel").val(data.kdmapel);
-                $("#nmmapel").val(data.nmmapel);
-                $("#tingkat_kelas").val(data.tingkat_kelas);
-                $("#keterangan").val(data.keterangan);
-                $("#idguru").val(data.idguru);
+                $("#nis").val(data.nis);
+                $("#name").val(data.nama);
+                $("#email").val(data.email);
+                $("#jenkel").val(data.jk);
+                $("#templahir").val(data.templahir);
+                $("#tgllahir").val(data.tgllahir);
+                $("#notelp").val(data.nohp);
+                $("#alamat").val(data.alamat);
             }
 
             function confirmDelete(id) {
@@ -244,7 +264,7 @@
                     id: id
                 };
                 $.ajax({
-                    url: "{{ route('admin.mapel.destroy') }}",
+                    url: "{{ route('admin.siswa.destroy') }}",
                     type: 'DELETE',
                     data: data,
                     success: function(res) {

@@ -12,6 +12,11 @@
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kode
                         Kelas
                     </th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tingkat
+                        Kelas
+                    </th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jurusan
+                    </th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah
                         Bangku
                     </th>
@@ -36,6 +41,16 @@
                 <div class="flex flex-col w-full mb-2">
                     <label for="kdkls" class="block text-gray-700">Kode Kelas</label>
                     <input type="text" id="kdkls" name="kdkls" class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="tingkat_kelas" class="block text-gray-700">Tingkat Kelas</label>
+                    <input type="number" id="tingkat_kelas" name="tingkat_kelas" min="1" max="3" class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="jurusan" class="block text-gray-700">Jurusan</label>
+                    <input type="text" id="jurusan" name="jurusan" class="border shadow-sm rounded-md py-2 px-3">
                 </div>
 
                 <div class="flex flex-col w-full mb-2">
@@ -80,6 +95,14 @@
                     {
                         data: 'kdkls',
                         name: 'kdkls'
+                    },
+                    {
+                        data: 'tingkat_kelas',
+                        name: 'tingkat_kelas'
+                    },
+                    {
+                        data: 'jurusan',
+                        name: 'jurusan'
                     },
                     {
                         data: 'jmlbangku',
@@ -197,6 +220,8 @@
             function populateForm(data) {
                 $("#recordId").val(data.id);
                 $("#kdkls").val(data.kdkls);
+                $("#tingkat_kelas").val(data.tingkat_kelas);
+                $("#jurusan").val(data.jurusan);
                 $("#jmlbangku").val(data.jmlbangku);
                 $("#idguru").val(data.idguru);
             }

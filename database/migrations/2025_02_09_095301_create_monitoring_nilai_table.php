@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jadwal_ujian', function (Blueprint $table) {
+        Schema::create('monitoring_nilai', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('idmtpelajaran')->nullable();
             $table->foreign('idmtpelajaran')->references('id')->on('mata_pelajaran')->onDelete('set null');
-            $table->date('hari_ujian');
-            $table->string('waktu_mulai');
-            $table->string('waktu_selesai');
-            $table->unsignedBigInteger('idkelas')->nullable();
-            $table->foreign('idkelas')->references('id')->on('kelas')->onDelete('set null');
-            $table->unsignedBigInteger('idguru')->nullable();
-            $table->foreign('idguru')->references('id')->on('guru')->onDelete('set null');
+            $table->unsignedBigInteger('idsiswa')->nullable();
+            $table->foreign('idsiswa')->references('id')->on('siswa')->onDelete('set null');
+            $table->enum('semester', ['ganjil', 'genap'])->default('ganjil');
+            $table->decimal('nilai', 4, 1)->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jadwal_ujian');
+        Schema::dropIfExists('monitoring_nilai');
     }
 };

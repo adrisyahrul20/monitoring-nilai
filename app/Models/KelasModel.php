@@ -12,7 +12,9 @@ class KelasModel extends Model
 
     protected $fillable = [
         'kdkls',
+        'tingkat_kelas',
         'jmlbangku',
+        'jurusan',
         'idguru',
     ];
 

@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.jadwal.index', absolute: false));
+        return redirect()->intended(route('admin.nilai.index', absolute: false));
     }
 
     /**

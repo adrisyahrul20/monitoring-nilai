@@ -5,19 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GuruModel extends Model
+class SiswaModel extends Model
 {
     use HasFactory;
-    protected $table = 'guru';
+    protected $table = 'siswa';
 
     protected $fillable = [
-        'nip',
+        'nis',
         'nama',
         'templahir',
         'tgllahir',
         'jk',
         'alamat',
-        'nohp',
-        'email',
+        'idkelas',
     ];
+
+    public function idKelas()
+    {
+        return $this->belongsTo(KelasModel::class, 'idkelas', 'id');
+    }
 }

@@ -5,40 +5,48 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\ErrorHandler;
 use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
-use App\Models\GuruModel;
+use App\Models\KelasModel;
+use App\Models\SiswaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Yajra\DataTables\DataTables;
 
-class GuruController extends Controller
+class SiswaController extends Controller
 {
     protected $table;
+    protected $kelas;
 
-    public function __construct(GuruModel $table)
+    public function __construct(SiswaModel $table, KelasModel $kelas)
     {
         $this->table = $table;
+        $this->kelas = $kelas;
     }
 
     public function index()
     {
-        return view('administrator.guru.index');
+        $dataKelas = $this->kelas->select('id', 'kdkls', 'jmlbangku')->get();
+        return view('administrator.siswa.index')->with([
+            'dataKelas' => $dataKelas,
+        ]);
     }
 
     public function datatable()
     {
         return DataTables::of($this->table->orderBy('created_at', 'desc')->select([
             'id',
-            'nip',
+            'nis',
             'nama',
             'templahir',
             'tgllahir',
             'jk',
             'alamat',
-            'nohp',
-            'email',
+            'idkelas',
         ]))
             ->addIndexColumn()
+            ->addColumn('kelas', function ($row) {
+                return $row->idKelas->kdkls ?? 'Mata Pelajaran Tidak Ada';
+            })
             ->addColumn('jkCast', function ($row) {
                 return $row->jk === 'lk' ? 'Laki-laki' : 'Perempuan';
             })
@@ -61,31 +69,39 @@ class GuruController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'nip' => 'required|string|max:255|unique:guru,nip',
+                'nis' => 'required|string|max:255|unique:siswa,nis',
                 'name' => 'required|string|max:255',
                 'templahir' => 'required|string|max:255',
                 'tgllahir' => 'required|string',
                 'jenkel' => 'required|in:lk,pr',
-                'notelp' => 'required|string|max:14',
-                'email' => 'required|string|email|max:255',
+                'idkelas' => 'required',
             ]);
 
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
 
-            $store = new $this->table;
-            $store->nip = $request->nip;
-            $store->nama = $request->name;
-            $store->templahir = $request->templahir;
-            $store->tgllahir = $request->tgllahir;
-            $store->jk = $request->jenkel;
-            $store->nohp = $request->notelp;
-            $store->email = $request->email;
-            $store->alamat = $request->alamat;
-            $store->save();
+            $jumlahSiwa = $this->table->where('idkelas', $request->idkelas)->get();
+            $QtySiswa = count($jumlahSiwa);
 
-            return FormatResponse::send(true, null, "Tambah data berhasil!", 200);
+            $checkQtyKelas = $this->kelas->where('id', $request->idkelas)->first();
+
+            if($checkQtyKelas->jmlbangku > $QtySiswa) {
+                $store = new $this->table;
+                $store->nis = $request->nis;
+                $store->nama = $request->name;
+                $store->templahir = $request->templahir;
+                $store->tgllahir = $request->tgllahir;
+                $store->jk = $request->jenkel;
+                $store->alamat = $request->alamat;
+                $store->idkelas = $request->idkelas;
+                $store->save();
+
+                return FormatResponse::send(true, null, "Tambah data berhasil!", 200);
+            } else {
+                return FormatResponse::send(false, null, "Tidak ada bangku kosong dikelas ini!", 400);
+            }
+
         } catch (\Throwable $th) {
             return ErrorHandler::record($th, 'response');
         }
@@ -95,13 +111,12 @@ class GuruController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'nip' => 'required|string|max:255',
+                'nis' => 'required|string|max:255',
                 'name' => 'required|string|max:255',
                 'templahir' => 'required|string|max:255',
                 'tgllahir' => 'required|string',
                 'jenkel' => 'required|in:lk,pr',
-                'notelp' => 'required|string|max:14',
-                'email' => 'required|string|email|max:255',
+                'idkelas' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -109,14 +124,13 @@ class GuruController extends Controller
             }
 
             $store = $this->table->find($request->id);
-            $store->nip = $request->nip;
+            $store->nis = $request->nis;
             $store->nama = $request->name;
             $store->templahir = $request->templahir;
             $store->tgllahir = $request->tgllahir;
             $store->jk = $request->jenkel;
-            $store->nohp = $request->notelp;
-            $store->email = $request->email;
             $store->alamat = $request->alamat;
+            $store->idkelas = $request->idkelas;
             $store->save();
 
             return FormatResponse::send(true, null, "Ubah data berhasil!", 200);

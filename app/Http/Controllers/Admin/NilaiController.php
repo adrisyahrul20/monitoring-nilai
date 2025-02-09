@@ -5,67 +5,83 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\ErrorHandler;
 use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
-use App\Models\GuruModel;
-use App\Models\JadwalUjianModel;
-use App\Models\KelasModel;
 use App\Models\MataPelajaranModel;
-use Carbon\Carbon;
+use App\Models\NilaiModel;
+use App\Models\SiswaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use stdClass;
 use Yajra\DataTables\DataTables;
 
-class JadwalUjianController extends Controller
+class NilaiController extends Controller
 {
     protected $table;
     protected $mapel;
-    protected $kelas;
-    protected $guru;
+    protected $siswa;
 
-    public function __construct(JadwalUjianModel $table, MataPelajaranModel $mapel, KelasModel $kelas, GuruModel $gurus)
+    public function __construct(NilaiModel $table, MataPelajaranModel $mapel, SiswaModel $siswa)
     {
         $this->table = $table;
         $this->mapel = $mapel;
-        $this->kelas = $kelas;
-        $this->guru = $gurus;
+        $this->siswa = $siswa;
     }
 
     public function index()
     {
-        $dataMapel = $this->mapel->select('id','nmmapel')->get();
-        $dataKelas = $this->kelas->select('id','kdkls')->get();
-        $dataGuru = $this->guru->select('id','nama')->get();
-        return view('administrator.jadwalujian.index')->with([
-            'dataMapel' => $dataMapel,
-            'dataKelas' => $dataKelas,
-            'dataGuru' => $dataGuru
+        $dataMapel = $this->mapel->get();
+        $dataShow = [];
+        foreach ($dataMapel as $data) {
+            $dataNilai = $this->table->where('idmtpelajaran', $data->id)->get();
+            $dataRes = [
+                'id' => $data->id,
+                'kdmapel' => $data->kdmapel,
+                'tingkat_kelas' => $data->tingkat_kelas,
+                'nmmapel' => $data->nmmapel,
+                'guru' => $data->idGuru->nama,
+                'siswa_ternilai' => count($dataNilai),
+            ];
+            $dataShow[] = $dataRes;
+        }
+
+        return view('administrator.nilai.index')->with([
+            'dataShow' => $dataShow,
         ]);
     }
 
-    public function datatable()
+    public function nilai(Request $request)
     {
-        Carbon::setLocale('id');
-        return DataTables::of($this->table->orderBy('created_at', 'desc')->select([
+        $idMapel = $request->query('mapel');
+        $dataMapel = $this->mapel->where('id', $idMapel)->first();
+        $dataSiswa = $this->siswa->get();
+        return view('administrator.nilai.mapel')->with([
+            'idMapel' => $idMapel,
+            'dataSiswa' => $dataSiswa,
+            'dataMapel' => $dataMapel,
+        ]);
+    }
+
+    public function datatable(Request $request)
+    {
+        $idMapel = $request->query('mapel');
+        return DataTables::of($this->table->where('idmtpelajaran', $idMapel)->orderBy('created_at', 'desc')->select([
             'id',
-            'idmtpelajaran',
-            'hari_ujian',
-            'waktu_mulai',
-            'waktu_selesai',
-            'idkelas',
-            'idguru',
+            'idsiswa',
+            'semester',
+            'nilai',
         ]))
             ->addIndexColumn()
-            ->addColumn('jadwal', function ($row) {
-                return Carbon::parse($row->hari_ujian)->translatedFormat('d F Y');
+            ->addColumn('siswa', function ($row) {
+                return $row->idSiswa->nama ?? 'Siswa Tidak Ada';
             })
-            ->addColumn('mapel', function ($row) {
-                return $row->idMapel->nmmapel ?? 'Mata Pelajaran Tidak Ada';
+            ->addColumn('tingkat_kelas', function ($row) {
+                return $row->idSiswa->idKelas->tingkat_kelas ?? 'Siswa Tidak Ada';
             })
-            ->addColumn('kelas', function ($row) {
-                return $row->idKelas->kdkls ?? 'Kelas Tidak Ada';
+            ->addColumn('jurusan', function ($row) {
+                return $row->idSiswa->idKelas->jurusan ?? 'Siswa Tidak Ada';
             })
-            ->addColumn('namaGuru', function ($row) {
-                return $row->idGuru->nama ?? 'Guru Tidak Ada';
+            ->addColumn('semesterCast', function ($row) {
+                return $row->semester === 'ganjil' ? "Ganjil" : "Genap";
             })
             ->addColumn('action', function ($row) {
                 return '
@@ -86,12 +102,10 @@ class JadwalUjianController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idmtpelajaran' => 'required',
-                'hari_ujian' => 'required',
-                'waktu_mulai' => 'required',
-                'waktu_selesai' => 'required',
-                'idkelas' => 'required',
-                'idguru' => 'required',
+                'idmtpelajaran' => 'required|string|max:255',
+                'idsiswa' => 'required|string|max:255',
+                'semester' => 'required|string|max:255',
+                'nilai' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -100,11 +114,9 @@ class JadwalUjianController extends Controller
 
             $store = new $this->table;
             $store->idmtpelajaran = $request->idmtpelajaran;
-            $store->hari_ujian = $request->hari_ujian;
-            $store->waktu_mulai = $request->waktu_mulai;
-            $store->waktu_selesai = $request->waktu_selesai;
-            $store->idkelas = $request->idkelas;
-            $store->idguru = $request->idguru;
+            $store->idsiswa = $request->idsiswa;
+            $store->semester = $request->semester;
+            $store->nilai = $request->nilai;
             $store->save();
 
             return FormatResponse::send(true, null, "Tambah data berhasil!", 200);
@@ -117,12 +129,10 @@ class JadwalUjianController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idmtpelajaran' => 'required',
-                'hari_ujian' => 'required',
-                'waktu_mulai' => 'required',
-                'waktu_selesai' => 'required',
-                'idkelas' => 'required',
-                'idguru' => 'required',
+                'idmtpelajaran' => 'required|string|max:255',
+                'idsiswa' => 'required|string|max:255',
+                'semester' => 'required|string|max:255',
+                'nilai' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -131,11 +141,9 @@ class JadwalUjianController extends Controller
 
             $store = $this->table->find($request->id);
             $store->idmtpelajaran = $request->idmtpelajaran;
-            $store->hari_ujian = $request->hari_ujian;
-            $store->waktu_mulai = $request->waktu_mulai;
-            $store->waktu_selesai = $request->waktu_selesai;
-            $store->idkelas = $request->idkelas;
-            $store->idguru = $request->idguru;
+            $store->idsiswa = $request->idsiswa;
+            $store->semester = $request->semester;
+            $store->nilai = $request->nilai;
             $store->save();
 
             return FormatResponse::send(true, null, "Ubah data berhasil!", 200);
