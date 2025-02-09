@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-white">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 dark:text-white">
         <div class="flex flex-col md:flex-row text-center justify-between gap-4">
             <h1 class="text-xl md:text-2xl font-semibold">Data Pengguna</h1>
             <button class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2 mb-4"

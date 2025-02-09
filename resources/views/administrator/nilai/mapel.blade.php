@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-white">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 dark:text-white">
         <div class="flex flex-col md:flex-row text-center justify-between items-center gap-4 mb-4">
             <div class="flex flex-col text-left">
                 <h1 class="text-xl md:text-2xl font-semibold">Nilai {{ $dataMapel->nmmapel }}</h1>

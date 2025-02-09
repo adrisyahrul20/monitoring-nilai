@@ -25,11 +25,11 @@
     @endphp
 </head>
 
-<body class="font-sans antialiased dark:bg-slate-900 dark:text-white/50">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 dark:text-white/50">
     @include('layouts.guestnav')
 
-    <div class="max-w-7xl mx-auto text-black/50 py-4 px-4 sm:px-6 lg:px-8">
-        <h1 class="text-center text-white text-xl lg:text-3xl font-bold mt-6">Nilai Siswa SMA N 2 Bayang</h1>
+    <div class="max-w-7xl mx-auto text-black/80 py-4 px-4 sm:px-6 lg:px-8">
+        <h1 class="text-center dark:text-white/80 text-xl lg:text-3xl font-bold mt-6">Nilai Siswa SMA N 2 Bayang</h1>
         <div class="relative overflow-x-auto mt-4">
             <table class="w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
