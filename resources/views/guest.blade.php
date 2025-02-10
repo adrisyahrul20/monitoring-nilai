@@ -29,52 +29,76 @@
     @include('layouts.guestnav')
 
     <div class="max-w-7xl mx-auto text-black/80 py-4 px-4 sm:px-6 lg:px-8">
-        <h1 class="text-center dark:text-white/80 text-xl lg:text-3xl font-bold mt-6">Nilai Siswa SMA N 2 Bayang</h1>
+        <div class="flex flex-col md:flex-row text-center justify-between gap-4">
+            <h1 class="text-3xl md:text-2xl font-semibold dark:text-white">Nilai Siswa SMA N 2 Bayang</h1>
+            <div class="flex gap-4 items-center">
+                <form action="{{ route('home-search') }}" method="POST" class="flex">
+                    @csrf
+                    <input type="text" id="cari" name="search"
+                        class="border shadow-sm rounded-l-lg py-2 px-3 w-72 text-black"
+                        placeholder="Cari NIS, NAMA, atau KELAS siswa" autocomplete="off" value="{{ $search }}">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg">
+                        Cari
+                    </button>
+                </form>
+                @if($search)
+                <a href="{{ route('home-page') }}" class="bg-yellow-500 text-black px-4 py-2 rounded-lg">
+                    Kembali
+                </a>
+                @endif
+            </div>
+        </div>
         <div class="relative overflow-x-auto mt-4">
             <table class="w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="px-6 py-3">
-                            Nama Siswa
+                            NIS
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Mata Pelajaran
+                            NAMA
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Tingkat Kelas
+                            KELAS
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Jurusan
+                            SEMESTER GANJIL
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Semester
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Nilai
+                            SEMESTER GENAP
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($data as $list)
+                    @foreach ($dataShow as $list)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ $list->idSiswa->nama }}
+                                {{ $list['nis'] }}
                             </th>
                             <td class="px-6 py-4">
-                                {{ $list->idMapel->nmmapel }}
+                                {{ $list['nama'] }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ $list->idSiswa->idKelas->tingkat_kelas }}
+                                {{ $list['kdkls'] }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ $list->idSiswa->idKelas->jurusan }}
+                                <div class="flex justify-center">
+                                    {!! $list['ganjil']
+                                        ? '<a href="' .
+                                            route('home-nilai', ['siswa' => $list['id'], 'semester' => 'ganjil']) .
+                                            '" class="btn bg-blue-500 rounded-lg px-4 py-1 text-white w-fit cursor-pointer">Lihat Nilai</a>'
+                                        : '<div class="btn bg-gray-500 rounded-lg px-4 py-1 text-white w-fit cursor-not-allowed">Belum Dinilai</div>' !!}
+                                </div>
                             </td>
                             <td class="px-6 py-4">
-                                {{ $list->semester }}
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ $list->nilai }}
+                                <div class="flex justify-center">
+                                    {!! $list['genap']
+                                        ? '<a href="' .
+                                            route('home-nilai', ['siswa' => $list['id'], 'semester' => 'genap']) .
+                                            '" class="btn bg-blue-500 rounded-lg px-4 py-1 text-white w-fit cursor-pointer">Lihat Nilai</a>'
+                                        : '<div class="btn bg-gray-500 rounded-lg px-4 py-1 text-white w-fit cursor-not-allowed">Belum Dinilai</div>' !!}
+                                </div>
                             </td>
                         </tr>
                     @endforeach

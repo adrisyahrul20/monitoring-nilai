@@ -14,11 +14,6 @@
                     </th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Mata Pelajaran
                     </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tingkat
-                        Kelas
-                    </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan
-                    </th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Guru
                         Pengampu</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action
@@ -45,16 +40,6 @@
                 <div class="flex flex-col w-full mb-2">
                     <label for="nmmapel" class="block text-gray-700">Nama Mata Pelajaran</label>
                     <input type="text" id="nmmapel" name="nmmapel" class="border shadow-sm rounded-md py-2 px-3">
-                </div>
-
-                <div class="flex flex-col w-full mb-2">
-                    <label for="tingkat_kelas" class="block text-gray-700">Tingkat Kelas</label>
-                    <input type="number" id="tingkat_kelas" name="tingkat_kelas" min="1" max="3" class="border shadow-sm rounded-md py-2 px-3">
-                </div>
-
-                <div class="flex flex-col w-full mb-2">
-                    <label for="keterangan" class="block text-gray-700">Keterangan</label>
-                    <textarea id="keterangan" name="keterangan" class="border shadow-sm rounded-md py-2 px-3"></textarea>
                 </div>
 
                 <div class="flex flex-col w-full mb-4">
@@ -98,14 +83,6 @@
                     {
                         data: 'nmmapel',
                         name: 'nmmapel'
-                    },
-                    {
-                        data: 'tingkat_kelas',
-                        name: 'tingkat_kelas'
-                    },
-                    {
-                        data: 'keterangan',
-                        name: 'keterangan'
                     },
                     {
                         data: 'namaGuru',
@@ -220,8 +197,6 @@
                 $("#recordId").val(data.id);
                 $("#kdmapel").val(data.kdmapel);
                 $("#nmmapel").val(data.nmmapel);
-                $("#tingkat_kelas").val(data.tingkat_kelas);
-                $("#keterangan").val(data.keterangan);
                 $("#idguru").val(data.idguru);
             }
 

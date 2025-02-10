@@ -25,7 +25,7 @@ class SiswaController extends Controller
 
     public function index()
     {
-        $dataKelas = $this->kelas->select('id', 'kdkls', 'jmlbangku')->get();
+        $dataKelas = $this->kelas->select('id', 'kdkls', 'jmlbangku')->orderBy('kdkls', 'asc')->get();
         return view('administrator.siswa.index')->with([
             'dataKelas' => $dataKelas,
         ]);
@@ -33,7 +33,7 @@ class SiswaController extends Controller
 
     public function datatable()
     {
-        return DataTables::of($this->table->orderBy('created_at', 'desc')->select([
+        return DataTables::of($this->table->orderBy('nis', 'desc')->select([
             'id',
             'nis',
             'nama',

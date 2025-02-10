@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kdkls')->unique()->index();
             $table->integer('tingkat_kelas');
-            $table->string('jurusan');
+            $table->string('jurusan')->nullable();
             $table->integer('jmlbangku');
             $table->unsignedBigInteger('idguru')->nullable();
             $table->foreign('idguru')->references('id')->on('guru')->onDelete('set null');

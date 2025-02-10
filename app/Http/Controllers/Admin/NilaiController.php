@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\ErrorHandler;
 use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
+use App\Models\KelasModel;
 use App\Models\MataPelajaranModel;
 use App\Models\NilaiModel;
+use App\Models\NilaiSiswaModel;
 use App\Models\SiswaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,27 +21,31 @@ class NilaiController extends Controller
     protected $table;
     protected $mapel;
     protected $siswa;
+    protected $kelas;
+    protected $nilaiSiswa;
 
-    public function __construct(NilaiModel $table, MataPelajaranModel $mapel, SiswaModel $siswa)
+    public function __construct(NilaiModel $table, NilaiSiswaModel $nilaiSiswa, MataPelajaranModel $mapel, SiswaModel $siswa, KelasModel $kelas)
     {
         $this->table = $table;
         $this->mapel = $mapel;
         $this->siswa = $siswa;
+        $this->kelas = $kelas;
+        $this->nilaiSiswa = $nilaiSiswa;
     }
 
     public function index()
     {
-        $dataMapel = $this->mapel->get();
+        $dataKelas = $this->kelas->orderBy('kdkls', 'asc')->get();
         $dataShow = [];
-        foreach ($dataMapel as $data) {
-            $dataNilai = $this->table->where('idmtpelajaran', $data->id)->get();
+        foreach ($dataKelas as $data) {
+            $dataSiswa = $this->siswa->where('idkelas', $data->id)->get();
             $dataRes = [
                 'id' => $data->id,
-                'kdmapel' => $data->kdmapel,
+                'kdkls' => $data->kdkls,
                 'tingkat_kelas' => $data->tingkat_kelas,
-                'nmmapel' => $data->nmmapel,
+                'jurusan' => $data->jurusan,
+                'total_siswa' => count($dataSiswa),
                 'guru' => $data->idGuru->nama,
-                'siswa_ternilai' => count($dataNilai),
             ];
             $dataShow[] = $dataRes;
         }
@@ -49,79 +55,84 @@ class NilaiController extends Controller
         ]);
     }
 
-    public function nilai(Request $request)
+    public function siswa(Request $request)
     {
-        $idMapel = $request->query('mapel');
-        $dataMapel = $this->mapel->where('id', $idMapel)->first();
-        $dataSiswa = $this->siswa->get();
-        return view('administrator.nilai.mapel')->with([
-            'idMapel' => $idMapel,
+        $idKelas = $request->query('kelas');
+        $semester = $request->query('semester');
+        $dataSiswa = $this->siswa->where('idkelas', $idKelas)->get();
+        $dataKelas = $this->kelas->where('id', $idKelas)->first();
+        foreach ($dataSiswa as $data) {
+            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
+            $dataRes = [
+                'id' => $data->id,
+                'nis' => $data->nis,
+                'nama' => $data->nama,
+                'status' => $semester === 'ganjil' ? $dataNilaiSiswa->ganjil ?? false : $dataNilaiSiswa->genap ?? false,
+            ];
+            $dataShow[] = $dataRes;
+        }
+        return view('administrator.nilai.siswa')->with([
+            'semester' => $semester,
+            'dataKelas' => $dataKelas,
             'dataSiswa' => $dataSiswa,
-            'dataMapel' => $dataMapel,
+            'dataShow' => $dataShow,
         ]);
     }
 
-    public function datatable(Request $request)
+    public function nilai(Request $request)
     {
-        $idMapel = $request->query('mapel');
-        return DataTables::of($this->table->where('idmtpelajaran', $idMapel)->orderBy('created_at', 'desc')->select([
-            'id',
-            'idsiswa',
-            'semester',
-            'nilai',
-        ]))
-            ->addIndexColumn()
-            ->addColumn('siswa', function ($row) {
-                return $row->idSiswa->nama ?? 'Siswa Tidak Ada';
-            })
-            ->addColumn('tingkat_kelas', function ($row) {
-                return $row->idSiswa->idKelas->tingkat_kelas ?? 'Siswa Tidak Ada';
-            })
-            ->addColumn('jurusan', function ($row) {
-                return $row->idSiswa->idKelas->jurusan ?? 'Siswa Tidak Ada';
-            })
-            ->addColumn('semesterCast', function ($row) {
-                return $row->semester === 'ganjil' ? "Ganjil" : "Genap";
-            })
-            ->addColumn('action', function ($row) {
-                return '
-                <div class="flex justify-center gap-3">
-                    <button type="button" class="text-blue-500 text-2xl" data-mode="edit" data-id="' . $row->id . '">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                    </button>
-                    <button type="button" class="text-red-500 text-2xl" data-mode="destroy" data-id="' . $row->id . '">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                    </button>
-                </div>';
-            })
-            ->rawColumns(['fotoCast', 'action'])
-            ->make(true);
+        $idSiswa = $request->query('siswa');
+        $semester = $request->query('semester');
+        $dataMapel = $this->mapel->orderBy('id', 'asc')->get();
+        $dataSiswa = $this->siswa->where('id', $idSiswa)->first();
+        return view('administrator.nilai.mapel')->with([
+            'semester' => $semester,
+            'idSiswa' => $idSiswa,
+            'dataMapel' => $dataMapel,
+            'dataSiswa' => $dataSiswa,
+        ]);
     }
 
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'idmtpelajaran' => 'required|string|max:255',
-                'idsiswa' => 'required|string|max:255',
-                'semester' => 'required|string|max:255',
-                'nilai' => 'required',
+                'semester' => 'required|in:ganjil,genap',
+                'idsiswa' => 'required|exists:siswa,id',
+                'idmtpelajaran' => 'required|array',
+                'idmtpelajaran.*' => 'required|integer|exists:mata_pelajaran,id',
+                'nilai' => 'required|array',
+                'nilai.*' => 'required|numeric|min:0|max:100',
+                'capaian' => 'nullable|array',
+                'capaian.*' => 'nullable|string|max:255',
             ]);
 
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
 
-            $store = new $this->table;
-            $store->idmtpelajaran = $request->idmtpelajaran;
-            $store->idsiswa = $request->idsiswa;
-            $store->semester = $request->semester;
-            $store->nilai = $request->nilai;
-            $store->save();
 
-            return FormatResponse::send(true, null, "Tambah data berhasil!", 200);
+            foreach ($request->idmtpelajaran as $key => $idmtpelajaran) {
+                $this->table::create([
+                    'idmtpelajaran' => $idmtpelajaran,
+                    'idsiswa' => $request->idsiswa,
+                    'semester' => $request->semester ?? 'ganjil',
+                    'nilai' => $request->nilai[$key] ?? null,
+                    'capaian' => $request->capaian[$key] ?? null,
+                ]);
+            }
+
+            $checkSiswa = $this->siswa->where('id', $request->idsiswa)->first();
+            $createNilaiSiswa = new $this->nilaiSiswa();
+            $createNilaiSiswa->idsiswa = $request->idsiswa;
+            $createNilaiSiswa->tingkat_kelas = $checkSiswa->idKelas->tingkat_kelas;
+            $createNilaiSiswa->ganjil = $request->semester === 'ganjil';
+            $createNilaiSiswa->genap = $request->semester === 'genap';
+            $createNilaiSiswa->save();
+
+            return redirect()->route('admin.nilai.siswa', ['kelas' => $checkSiswa->idkelas, 'semester' => $request->semester])->with('success', 'Nilai siswa ' . $checkSiswa->nama . ' sudah diinput.');
         } catch (\Throwable $th) {
-            return ErrorHandler::record($th, 'response');
+            return redirect()->route('admin.nilai.siswa', ['kelas' => $checkSiswa->idkelas, 'semester' => $request->semester])->with('error', 'Terjadi kesalahan saat menginput nilai.');
         }
     }
 

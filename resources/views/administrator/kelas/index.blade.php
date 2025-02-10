@@ -15,7 +15,7 @@
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tingkat
                         Kelas
                     </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jurusan
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Peminatan
                     </th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah
                         Bangku
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="flex flex-col w-full mb-2">
-                    <label for="jurusan" class="block text-gray-700">Jurusan</label>
+                    <label for="jurusan" class="block text-gray-700">Peminatan</label>
                     <input type="text" id="jurusan" name="jurusan" class="border shadow-sm rounded-md py-2 px-3">
                 </div>
 

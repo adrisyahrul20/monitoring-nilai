@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Guest;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\KelasModel;
@@ -10,7 +10,7 @@ use App\Models\NilaiSiswaModel;
 use App\Models\SiswaModel;
 use Illuminate\Http\Request;
 
-class LandingController extends Controller
+class DashboardController extends Controller
 {
     protected $table;
     protected $mapel;
@@ -43,9 +43,10 @@ class LandingController extends Controller
             ];
             $dataShow[] = $dataRes;
         }
-        return view('guest')->with([
+        return view('administrator.dashboard.index')->with([
             'search' => $search,
-            'dataShow' => $dataShow
+            'dataSiswa' => $dataSiswa,
+            'dataShow' => $dataShow,
         ]);
     }
 
@@ -75,7 +76,7 @@ class LandingController extends Controller
             ];
             $dataShow[] = $dataRes;
         }
-        return view('guest')->with([
+        return view('administrator.dashboard.index')->with([
             'search' => $search,
             'dataSiswa' => $dataSiswa,
             'dataShow' => $dataShow,
@@ -89,7 +90,7 @@ class LandingController extends Controller
 
         $dataSiswa = $this->siswa->where('id', $siswa)->first();
         $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
-        return view('guestnilai')->with([
+        return view('administrator.dashboard.nilai')->with([
             'dataNilai' => $dataNilai,
             'dataSiswa' => $dataSiswa,
             'semester' => $semester,

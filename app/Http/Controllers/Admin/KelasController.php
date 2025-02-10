@@ -33,7 +33,7 @@ class KelasController extends Controller
 
     public function datatable()
     {
-        return DataTables::of($this->table->orderBy('created_at', 'desc')->select([
+        return DataTables::of($this->table->orderBy('kdkls', 'asc')->select([
             'id',
             'kdkls',
             'tingkat_kelas',
@@ -66,7 +66,6 @@ class KelasController extends Controller
             $validator = Validator::make($request->all(), [
                 'kdkls' => 'required|string|max:255|unique:kelas,kdkls',
                 'tingkat_kelas' => 'required',
-                'jurusan' => 'required|string|max:255',
                 'jmlbangku' => 'required|integer',
                 'idguru' => 'required',
             ]);
@@ -95,7 +94,6 @@ class KelasController extends Controller
             $validator = Validator::make($request->all(), [
                 'kdkls' => 'required|string|max:255',
                 'tingkat_kelas' => 'required',
-                'jurusan' => 'required|string|max:255',
                 'jmlbangku' => 'required|integer',
                 'idguru' => 'required',
             ]);

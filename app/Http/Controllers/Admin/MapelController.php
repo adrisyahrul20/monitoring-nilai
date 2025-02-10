@@ -37,8 +37,6 @@ class MapelController extends Controller
             'id',
             'kdmapel',
             'nmmapel',
-            'tingkat_kelas',
-            'keterangan',
             'idguru',
         ]))
             ->addIndexColumn()
@@ -66,8 +64,6 @@ class MapelController extends Controller
             $validator = Validator::make($request->all(), [
                 'kdmapel' => 'required|string|max:255|unique:mata_pelajaran,kdmapel',
                 'nmmapel' => 'required|string',
-                'tingkat_kelas' => 'required',
-                'keterangan' => 'required|string',
                 'idguru' => 'required',
             ]);
 
@@ -78,8 +74,6 @@ class MapelController extends Controller
             $store = new $this->table;
             $store->kdmapel = $request->kdmapel;
             $store->nmmapel = $request->nmmapel;
-            $store->tingkat_kelas = $request->tingkat_kelas;
-            $store->keterangan = $request->keterangan;
             $store->idguru = $request->idguru;
             $store->save();
 
@@ -95,8 +89,6 @@ class MapelController extends Controller
             $validator = Validator::make($request->all(), [
                 'kdmapel' => 'required|string|max:255',
                 'nmmapel' => 'required|string',
-                'tingkat_kelas' => 'required',
-                'keterangan' => 'required|string',
                 'idguru' => 'required',
             ]);
 
@@ -107,8 +99,6 @@ class MapelController extends Controller
             $store = $this->table->find($request->id);
             $store->kdmapel = $request->kdmapel;
             $store->nmmapel = $request->nmmapel;
-            $store->tingkat_kelas = $request->tingkat_kelas;
-            $store->keterangan = $request->keterangan;
             $store->idguru = $request->idguru;
             $store->save();
 

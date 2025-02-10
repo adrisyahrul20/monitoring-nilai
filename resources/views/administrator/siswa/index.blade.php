@@ -243,6 +243,7 @@
                 $("#tgllahir").val(data.tgllahir);
                 $("#notelp").val(data.nohp);
                 $("#alamat").val(data.alamat);
+                $("#idkelas").val(data.idkelas);
             }
 
             function confirmDelete(id) {

@@ -5,23 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NilaiModel extends Model
+class NilaiSiswaModel extends Model
 {
     use HasFactory;
-    protected $table = 'monitoring_nilai';
+    protected $table = 'nilai_siswa';
 
     protected $fillable = [
-        'idmtpelajaran',
         'idsiswa',
-        'semester',
-        'nilai',
-        'capaian',
+        'tingkat_kelas',
+        'ganjil',
+        'genap',
     ];
-
-    public function idMapel()
-    {
-        return $this->belongsTo(MataPelajaranModel::class, 'idmtpelajaran', 'id');
-    }
 
     public function idSiswa()
     {
