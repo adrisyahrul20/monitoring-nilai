@@ -21,15 +21,15 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('admin.nilai.siswa') . '?kelas=' . $dataKelas->id . '&semester=ganjil'">
+                        <x-dropdown-link :href="route('admin.nilai.input.siswa') . '?kelas=' . $dataKelas->id . '&semester=ganjil'">
                             Ganjil
                         </x-dropdown-link>
-                        <x-dropdown-link :href="route('admin.nilai.siswa') . '?kelas=' . $dataKelas->id . '&semester=genap'">
+                        <x-dropdown-link :href="route('admin.nilai.input.siswa') . '?kelas=' . $dataKelas->id . '&semester=genap'">
                             Genap
                         </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
-                <a href="{{ route('admin.nilai.index') }}" class="bg-yellow-500 text-black px-4 py-1 rounded-lg">
+                <a href="{{ route('admin.nilai.input.input') }}" class="bg-yellow-500 text-black px-4 py-1 rounded-lg">
                     Kembali
                 </a>
             </div>
@@ -71,7 +71,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 @if (!$list['status'])
-                                    <a href="{{ route('admin.nilai.mapel') }}?siswa={{ $list['id'] }}&semester={{ $semester }}"
+                                    <a href="{{ route('admin.nilai.input.mapel') }}?siswa={{ $list['id'] }}&semester={{ $semester }}"
                                         class="btn bg-blue-500 text-white rounded-lg px-4 py-2">
                                         Nilai Siswa</a>
                                 @endif

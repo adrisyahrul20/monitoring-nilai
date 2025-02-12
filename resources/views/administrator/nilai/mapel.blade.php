@@ -44,7 +44,7 @@
                                 <td class="px-6 py-4">
                                     <input type="number" id="nilai_{{ $list->id }}"
                                         name="nilai[{{ $list->id }}]" min="0" max="100"
-                                        class="border shadow-sm rounded-md py-2 px-3 w-20 text-black">
+                                        class="border shadow-sm rounded-md py-2 px-3 w-20 text-black" required>
                                 </td>
                                 <td class="px-6 py-4">
                                     <textarea id="capaian_{{ $list->id }}" name="capaian[{{ $list->id }}]"

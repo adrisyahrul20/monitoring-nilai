@@ -35,6 +35,77 @@ class NilaiController extends Controller
 
     public function index()
     {
+        $search = null;
+        $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
+        foreach ($dataSiswa as $data) {
+            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
+            $dataRes = [
+                'id' => $data->id,
+                'nis' => $data->nis,
+                'nama' => $data->nama,
+                'kdkls' => $data->idKelas->kdkls,
+                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
+                'genap' => $dataNilaiSiswa->genap ?? 0,
+            ];
+            $dataShow[] = $dataRes;
+        }
+        return view('administrator.nilai.index')->with([
+            'search' => $search,
+            'dataSiswa' => $dataSiswa,
+            'dataShow' => $dataShow ?? [],
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $dataSiswa = $this->siswa
+            ->where(function ($query) use ($search) {
+                $query->where('nis', 'LIKE', '%' . $search . '%')
+                    ->orWhere('nama', 'LIKE', '%' . $search . '%')
+                    ->orWhereHas('idKelas', function ($query) use ($search) {
+                        $query->where('kdkls', 'LIKE', '%' . $search . '%');
+                    });
+            })
+            ->orderBy('id', 'asc')
+            ->get();
+        $dataShow = [];
+        foreach ($dataSiswa as $data) {
+            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
+            $dataRes = [
+                'id' => $data->id,
+                'nis' => $data->nis,
+                'nama' => $data->nama,
+                'kdkls' => $data->idKelas->kdkls,
+                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
+                'genap' => $dataNilaiSiswa->genap ?? 0,
+            ];
+            $dataShow[] = $dataRes;
+        }
+        return view('administrator.nilai.index')->with([
+            'search' => $search,
+            'dataSiswa' => $dataSiswa,
+            'dataShow' => $dataShow ?? [],
+        ]);
+    }
+
+    public function nilai(Request $request)
+    {
+        $semester = $request->input('semester');
+        $siswa = $request->input('siswa');
+
+        $dataSiswa = $this->siswa->where('id', $siswa)->first();
+        $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
+        return view('administrator.nilai.nilai')->with([
+            'dataNilai' => $dataNilai,
+            'dataSiswa' => $dataSiswa,
+            'semester' => $semester,
+            'siswa' => $siswa,
+        ]);
+    }
+
+    public function input()
+    {
         $dataKelas = $this->kelas->orderBy('kdkls', 'asc')->get();
         $dataShow = [];
         foreach ($dataKelas as $data) {
@@ -50,7 +121,7 @@ class NilaiController extends Controller
             $dataShow[] = $dataRes;
         }
 
-        return view('administrator.nilai.index')->with([
+        return view('administrator.nilai.input')->with([
             'dataShow' => $dataShow,
         ]);
     }
@@ -75,11 +146,11 @@ class NilaiController extends Controller
             'semester' => $semester,
             'dataKelas' => $dataKelas,
             'dataSiswa' => $dataSiswa,
-            'dataShow' => $dataShow,
+            'dataShow' => $dataShow ?? [],
         ]);
     }
 
-    public function nilai(Request $request)
+    public function inputNilai(Request $request)
     {
         $idSiswa = $request->query('siswa');
         $semester = $request->query('semester');
@@ -130,48 +201,48 @@ class NilaiController extends Controller
             $createNilaiSiswa->genap = $request->semester === 'genap';
             $createNilaiSiswa->save();
 
-            return redirect()->route('admin.nilai.siswa', ['kelas' => $checkSiswa->idkelas, 'semester' => $request->semester])->with('success', 'Nilai siswa ' . $checkSiswa->nama . ' sudah diinput.');
+            return redirect()->route('admin.nilai.input.siswa', ['kelas' => $checkSiswa->idkelas, 'semester' => $request->semester])->with('success', 'Nilai siswa ' . $checkSiswa->nama . ' sudah diinput.');
         } catch (\Throwable $th) {
-            return redirect()->route('admin.nilai.siswa', ['kelas' => $checkSiswa->idkelas, 'semester' => $request->semester])->with('error', 'Terjadi kesalahan saat menginput nilai.');
+            return redirect()->route('admin.nilai.input.input')->with('error', 'Terjadi kesalahan saat menginput nilai.');
         }
     }
 
-    public function update(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'idmtpelajaran' => 'required|string|max:255',
-                'idsiswa' => 'required|string|max:255',
-                'semester' => 'required|string|max:255',
-                'nilai' => 'required',
-            ]);
+    // public function update(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'idmtpelajaran' => 'required|string|max:255',
+    //             'idsiswa' => 'required|string|max:255',
+    //             'semester' => 'required|string|max:255',
+    //             'nilai' => 'required',
+    //         ]);
 
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
+    //         if ($validator->fails()) {
+    //             throw new ValidationException($validator);
+    //         }
 
-            $store = $this->table->find($request->id);
-            $store->idmtpelajaran = $request->idmtpelajaran;
-            $store->idsiswa = $request->idsiswa;
-            $store->semester = $request->semester;
-            $store->nilai = $request->nilai;
-            $store->save();
+    //         $store = $this->table->find($request->id);
+    //         $store->idmtpelajaran = $request->idmtpelajaran;
+    //         $store->idsiswa = $request->idsiswa;
+    //         $store->semester = $request->semester;
+    //         $store->nilai = $request->nilai;
+    //         $store->save();
 
-            return FormatResponse::send(true, null, "Ubah data berhasil!", 200);
-        } catch (\Throwable $th) {
-            return ErrorHandler::record($th, 'response');
-        }
-    }
+    //         return FormatResponse::send(true, null, "Ubah data berhasil!", 200);
+    //     } catch (\Throwable $th) {
+    //         return ErrorHandler::record($th, 'response');
+    //     }
+    // }
 
-    public function destroy(Request $request)
-    {
-        try {
-            $destroy = $this->table->findOrFail($request->id);
-            $destroy->delete();
+    // public function destroy(Request $request)
+    // {
+    //     try {
+    //         $destroy = $this->table->findOrFail($request->id);
+    //         $destroy->delete();
 
-            return FormatResponse::send(true, $destroy, "Hapus data berhasil!", 200);
-        } catch (\Throwable $th) {
-            return ErrorHandler::record($th, 'response');
-        }
-    }
+    //         return FormatResponse::send(true, $destroy, "Hapus data berhasil!", 200);
+    //     } catch (\Throwable $th) {
+    //         return ErrorHandler::record($th, 'response');
+    //     }
+    // }
 }

@@ -21,10 +21,28 @@ class UsersSeeder extends Seeder
                 'role' => 'admin',
             ],
             [
-                'name' => 'Guru Sampel',
-                'email' => 'gurusampel@mail.com',
-                'password' => bcrypt('gurusampel'),
+                'name' => 'Guru Mapel',
+                'email' => 'gurumapel@mail.com',
+                'password' => bcrypt('gurumapel'),
                 'role' => 'guru',
+            ],
+            [
+                'name' => 'Guru Wali Kelas',
+                'email' => 'guruwalikelas@mail.com',
+                'password' => bcrypt('guruwalikelas'),
+                'role' => 'guru',
+            ],
+            [
+                'name' => 'Siswa',
+                'email' => 'siswa@mail.com',
+                'password' => bcrypt('siswa'),
+                'role' => 'siswa',
+            ],
+            [
+                'name' => 'Kepala Sekolah',
+                'email' => 'kepsek@mail.com',
+                'password' => bcrypt('kepsek'),
+                'role' => 'kepsek',
             ],
         ];
 

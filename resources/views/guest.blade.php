@@ -42,7 +42,7 @@
                     </button>
                 </form>
                 @if($search)
-                <a href="{{ route('home-page') }}" class="bg-yellow-500 text-black px-4 py-2 rounded-lg">
+                <a href="{{ route('raport-page') }}" class="bg-yellow-500 text-black px-4 py-2 rounded-lg">
                     Kembali
                 </a>
                 @endif

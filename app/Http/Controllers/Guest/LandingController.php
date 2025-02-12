@@ -29,6 +29,11 @@ class LandingController extends Controller
 
     public function index()
     {
+        return view('statistik');
+    }
+
+    public function raport()
+    {
         $search = null;
         $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
         foreach ($dataSiswa as $data) {
@@ -45,7 +50,7 @@ class LandingController extends Controller
         }
         return view('guest')->with([
             'search' => $search,
-            'dataShow' => $dataShow
+            'dataShow' => $dataShow ?? []
         ]);
     }
 
@@ -78,7 +83,7 @@ class LandingController extends Controller
         return view('guest')->with([
             'search' => $search,
             'dataSiswa' => $dataSiswa,
-            'dataShow' => $dataShow,
+            'dataShow' => $dataShow ?? [],
         ]);
     }
 

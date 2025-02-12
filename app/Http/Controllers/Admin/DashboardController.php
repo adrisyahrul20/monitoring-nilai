@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helper\ErrorHandler;
+use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
 use App\Models\KelasModel;
 use App\Models\MataPelajaranModel;
@@ -9,6 +11,7 @@ use App\Models\NilaiModel;
 use App\Models\NilaiSiswaModel;
 use App\Models\SiswaModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -29,72 +32,54 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $search = null;
-        $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
-        foreach ($dataSiswa as $data) {
-            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
-            $dataRes = [
-                'id' => $data->id,
-                'nis' => $data->nis,
-                'nama' => $data->nama,
-                'kdkls' => $data->idKelas->kdkls,
-                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
-                'genap' => $dataNilaiSiswa->genap ?? 0,
-            ];
-            $dataShow[] = $dataRes;
-        }
-        return view('administrator.dashboard.index')->with([
-            'search' => $search,
-            'dataSiswa' => $dataSiswa,
-            'dataShow' => $dataShow,
-        ]);
+        return view('administrator.dashboard.index');
     }
 
-    public function search(Request $request)
+    public function chart()
     {
-        $search = $request->input('search');
-        $dataSiswa = $this->siswa
-            ->where(function ($query) use ($search) {
-                $query->where('nis', 'LIKE', '%' . $search . '%')
-                    ->orWhere('nama', 'LIKE', '%' . $search . '%')
-                    ->orWhereHas('idKelas', function ($query) use ($search) {
-                        $query->where('kdkls', 'LIKE', '%' . $search . '%');
-                    });
-            })
-            ->orderBy('id', 'asc')
-            ->get();
-        $dataShow = [];
-        foreach ($dataSiswa as $data) {
-            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
-            $dataRes = [
-                'id' => $data->id,
-                'nis' => $data->nis,
-                'nama' => $data->nama,
-                'kdkls' => $data->idKelas->kdkls,
-                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
-                'genap' => $dataNilaiSiswa->genap ?? 0,
-            ];
-            $dataShow[] = $dataRes;
+        try {
+            $data = NilaiModel::select(
+                'mata_pelajaran.kdmapel as mata_pelajaran', // Add kdmapel
+                'mata_pelajaran.nmmapel',
+                DB::raw('SUM(CASE WHEN nilai >= 80 THEN 1 ELSE 0 END) as lulus'),
+                DB::raw('SUM(CASE WHEN nilai < 80 THEN 1 ELSE 0 END) as tidak_lulus')
+            )
+                ->join('mata_pelajaran', 'monitoring_nilai.idmtpelajaran', '=', 'mata_pelajaran.id')
+                ->groupBy('mata_pelajaran.kdmapel', 'mata_pelajaran.nmmapel') // Include kdmapel in groupBy
+                ->get();
+
+            return FormatResponse::send(true, $data, "Berhasil mendapatkan data chart!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
         }
-        return view('administrator.dashboard.index')->with([
-            'search' => $search,
-            'dataSiswa' => $dataSiswa,
-            'dataShow' => $dataShow,
-        ]);
     }
 
-    public function nilai(Request $request)
+    public function detail(Request $request)
     {
-        $semester = $request->input('semester');
-        $siswa = $request->input('siswa');
+        try {
+            $kdmapel = $request->query('kdmapel');
+            $status = $request->query('status');
 
-        $dataSiswa = $this->siswa->where('id', $siswa)->first();
-        $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
-        return view('administrator.dashboard.nilai')->with([
-            'dataNilai' => $dataNilai,
-            'dataSiswa' => $dataSiswa,
-            'semester' => $semester,
-            'siswa' => $siswa,
-        ]);
+            if (!$kdmapel || !$status) {
+                return response()->json(['success' => false, 'message' => 'Invalid parameters'], 400);
+            }
+
+            $query = NilaiModel::select('siswa.nama as nama_siswa', 'nilai', 'capaian')
+                ->join('siswa', 'monitoring_nilai.idsiswa', '=', 'siswa.id')
+                ->join('mata_pelajaran', 'monitoring_nilai.idmtpelajaran', '=', 'mata_pelajaran.id')
+                ->where('mata_pelajaran.kdmapel', $kdmapel);
+
+            if ($status == 'Lulus') {
+                $query->where('nilai', '>=', 80);
+            } else {
+                $query->where('nilai', '<', 80);
+            }
+
+            $data = $query->get();
+
+            return FormatResponse::send(true, $data, "Berhasil mendapatkan data Detail!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
+        }
     }
 }

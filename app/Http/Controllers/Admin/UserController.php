@@ -38,6 +38,8 @@ class UserController extends Controller
                 $roles = [
                     'admin' => 'Administrator',
                     'guru' => 'Guru',
+                    'siswa' => 'Siswa',
+                    'kepsek' => 'Kepala Sekolah',
                 ];
                 return $roles[$row->role] ?? 'Error';
             })
@@ -62,7 +64,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email',
-                'role' => 'required|in:admin,guru',
+                'role' => 'required|in:admin,guru,siswa,kepsek',
                 'password' => 'required',
             ]);
 
@@ -90,7 +92,7 @@ class UserController extends Controller
                 'id' => 'required',
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
-                'role' => 'required|in:admin,guru',
+                'role' => 'required|in:admin,guru,siswa,kepsek',
             ]);
 
             if ($validator->fails()) {
