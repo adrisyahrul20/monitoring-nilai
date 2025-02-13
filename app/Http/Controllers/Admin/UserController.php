@@ -37,8 +37,8 @@ class UserController extends Controller
             ->addColumn('roleCast', function ($row) {
                 $roles = [
                     'admin' => 'Administrator',
-                    'guru' => 'Guru',
-                    'siswa' => 'Siswa',
+                    'guru' => 'Guru Wali Kelas',
+                    'siswa' => 'Orang Tua - Siswa',
                     'kepsek' => 'Kepala Sekolah',
                 ];
                 return $roles[$row->role] ?? 'Error';
