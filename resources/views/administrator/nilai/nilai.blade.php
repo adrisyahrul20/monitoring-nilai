@@ -15,9 +15,14 @@
                 <p class="text-sm">NIS : {{ $dataSiswa->nis }}</p>
                 <p class="text-sm">KELAS : {{ $dataSiswa->idKelas->kdkls }}</p>
             </div>
-            <a href="{{ route('export-pdf', ['siswa' => $siswa, 'semester' => $semester]) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                Export PDF
-            </a>
+            <div class="flex gap-4">
+                <a href="{{ route('admin.nilai.input.update', ['siswa' => $siswa, 'semester' => $semester]) }}" class="bg-yellow-500 text-black px-4 py-2 rounded-lg">
+                    Ubah Nilai
+                </a>
+                <a href="{{ route('export-pdf', ['siswa' => $siswa, 'semester' => $semester]) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
+                    Export PDF
+                </a>
+            </div>
         </div>
         <div class="relative overflow-x-auto mt-4">
             <table class="w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">

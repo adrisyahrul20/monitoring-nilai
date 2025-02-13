@@ -39,10 +39,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
             Route::get('/', 'input')->name('input');
             Route::get('/siswa', 'siswa')->name('siswa');
             Route::get('/nilai', 'inputNilai')->name('mapel');
+            Route::get('/update', 'update')->name('update');
         });
+
         Route::get('/data-table', 'datatable')->name('datatable');
         Route::post('/store', 'store')->name('store');
-        Route::put('/update', 'update')->name('update');
+        Route::post('/update', 'putUpdate')->name('update');
         Route::delete('/delete', 'destroy')->name('destroy');
     });
 

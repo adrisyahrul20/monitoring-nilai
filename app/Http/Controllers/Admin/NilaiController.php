@@ -207,6 +207,64 @@ class NilaiController extends Controller
         }
     }
 
+    public function update(Request $request)
+    {
+        $semester = $request->input('semester');
+        $siswa = $request->input('siswa');
+
+        $dataSiswa = $this->siswa->where('id', $siswa)->first();
+        $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
+        return view('administrator.nilai.update')->with([
+            'dataNilai' => $dataNilai,
+            'dataSiswa' => $dataSiswa,
+            'semester' => $semester,
+            'siswa' => $siswa,
+        ]);
+    }
+
+    public function putUpdate(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'semester' => 'required|in:ganjil,genap',
+                'idsiswa' => 'required|exists:siswa,id',
+                'idmtpelajaran' => 'required|array',
+                'idmtpelajaran.*' => 'required|integer|exists:mata_pelajaran,id',
+                'nilai' => 'required|array',
+                'nilai.*' => 'required|numeric|min:0|max:100',
+                'capaian' => 'nullable|array',
+                'capaian.*' => 'nullable|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+
+            foreach ($request->idmtpelajaran as $key => $idmtpelajaran) {
+                $this->table::updateOrInsert(
+                    [
+                        'idmtpelajaran' => $idmtpelajaran,
+                        'idsiswa' => $request->idsiswa,
+                        'semester' => $request->semester ?? 'ganjil',
+                    ],
+                    [
+                        'nilai' => $request->nilai[$key] ?? null,
+                        'capaian' => $request->capaian[$key] ?? null,
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+
+            $checkSiswa = $this->siswa->where('id', $request->idsiswa)->first();
+
+            return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->id, 'semester' => $request->semester])->with('success', 'Nilai siswa ' . $checkSiswa->nama . ' sudah diinput.');
+        } catch (\Throwable $th) {
+            $checkSiswa = $this->siswa->where('id', $request->idsiswa)->first();
+            return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->id, 'semester' => $request->semester])->with('error', $th->getMessage());
+        }
+    }
+    
     // public function update(Request $request)
     // {
     //     try {
