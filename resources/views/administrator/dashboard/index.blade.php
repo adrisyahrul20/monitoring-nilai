@@ -92,7 +92,7 @@
                                 const datasetIndex = elements[0].datasetIndex;
                                 const selectedLabel = labels[index];
                                 const selectedLongLabel = longLabels[index];
-                                const selectedStatus = datasetIndex === 0 ? 'Lulus' : 'Tidak Lulus';
+                                const selectedStatus = datasetIndex === 0 ? 'Tuntas' : 'Tidak Tuntas';
                                 
                                 $('#dataModal').removeClass('hidden');
                                 fetch(
