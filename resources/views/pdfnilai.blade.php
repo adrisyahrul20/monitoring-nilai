@@ -49,7 +49,7 @@
         }
 
         .mb-5 {
-            margin-bottom: 250px;
+            margin-bottom: 100px;
         }
     </style>
     @php
