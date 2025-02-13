@@ -53,7 +53,7 @@
         }
 
         .mb-2 {
-            margin-top: 10px;
+            margin-top: 20px;
         }
     </style>
     @php
