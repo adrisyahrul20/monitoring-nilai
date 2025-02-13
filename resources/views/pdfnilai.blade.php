@@ -51,6 +51,10 @@
         .mb-5 {
             margin-bottom: 80px;
         }
+
+        .mb-2 {
+            margin-top: 10px;
+        }
     </style>
     @php
         use Carbon\Carbon;
@@ -100,7 +104,7 @@
             @endforeach
         </tbody>
     </table>
-    <div class="text-right mb-5">
+    <div class="text-right mb-5 mt-2">
         <p>Kab. Pesisir Selatan, {{ Carbon::now()->translatedFormat('d F Y') }}</p>
         <p>Wali Kelas,</p>
     </div>
