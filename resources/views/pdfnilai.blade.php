@@ -45,7 +45,7 @@
         }
 
         .text-right {
-            text-align: end;
+            text-align: right;
         }
 
         .mb-5 {
