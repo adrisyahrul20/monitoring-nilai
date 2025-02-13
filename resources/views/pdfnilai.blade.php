@@ -24,7 +24,8 @@
             margin-top: 10px;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid black;
             padding: 8px;
             text-align: left;
@@ -42,7 +43,20 @@
         .info-table {
             margin-bottom: 20px;
         }
+
+        .text-right {
+            text-align: end;
+        }
+
+        .mb-5 {
+            margin-bottom: 250px;
+        }
     </style>
+    @php
+        use Carbon\Carbon;
+
+        Carbon::setLocale('id');
+    @endphp
 </head>
 
 <body>
@@ -86,6 +100,15 @@
             @endforeach
         </tbody>
     </table>
+    <div class="text-right mb-5">
+        <p>Kab. Pesisir Selatan, {{ Carbon::now()->translatedFormat('d F Y') }}</p>
+        <p>Wali Kelas,</p>
+    </div>
+
+    <div class="text-right">
+        <p>{{ $dataSiswa->idKelas->idGuru->nama }}</p>
+        <p>NIP: {{ $dataSiswa->idKelas->idGuru->nip }}</p>
+    </div>
 </body>
 
 </html>
