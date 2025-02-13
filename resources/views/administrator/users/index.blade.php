@@ -52,7 +52,9 @@
                     <select id="role" name="role" class="border shadow-sm rounded-md py-2 px-3">
                         <option value="">Pilih Jabatan</option>
                         <option value="admin">Administrator</option>
-                        <option value="guru">Guru</option>
+                        <option value="guru">Guru Wali Kelas</option>
+                        <option value="guru">Orang Tua - Siswa</option>
+                        <option value="guru">Kepala Sekolah</option>
                     </select>
                 </div>
 
