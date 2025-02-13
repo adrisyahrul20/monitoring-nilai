@@ -264,43 +264,4 @@ class NilaiController extends Controller
             return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->id, 'semester' => $request->semester])->with('error', $th->getMessage());
         }
     }
-    
-    // public function update(Request $request)
-    // {
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'idmtpelajaran' => 'required|string|max:255',
-    //             'idsiswa' => 'required|string|max:255',
-    //             'semester' => 'required|string|max:255',
-    //             'nilai' => 'required',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             throw new ValidationException($validator);
-    //         }
-
-    //         $store = $this->table->find($request->id);
-    //         $store->idmtpelajaran = $request->idmtpelajaran;
-    //         $store->idsiswa = $request->idsiswa;
-    //         $store->semester = $request->semester;
-    //         $store->nilai = $request->nilai;
-    //         $store->save();
-
-    //         return FormatResponse::send(true, null, "Ubah data berhasil!", 200);
-    //     } catch (\Throwable $th) {
-    //         return ErrorHandler::record($th, 'response');
-    //     }
-    // }
-
-    // public function destroy(Request $request)
-    // {
-    //     try {
-    //         $destroy = $this->table->findOrFail($request->id);
-    //         $destroy->delete();
-
-    //         return FormatResponse::send(true, $destroy, "Hapus data berhasil!", 200);
-    //     } catch (\Throwable $th) {
-    //         return ErrorHandler::record($th, 'response');
-    //     }
-    // }
 }

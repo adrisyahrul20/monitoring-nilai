@@ -61,7 +61,7 @@ class DashboardController extends Controller
             $status = $request->query('status');
 
             if (!$kdmapel || !$status) {
-                return response()->json(['success' => false, 'message' => 'Invalid parameters'], 400);
+                return FormatResponse::send(false, null, "Invalid parameters!", 400);
             }
 
             $query = NilaiModel::select('siswa.nama as nama_siswa', 'nilai', 'capaian')
@@ -69,13 +69,16 @@ class DashboardController extends Controller
                 ->join('mata_pelajaran', 'monitoring_nilai.idmtpelajaran', '=', 'mata_pelajaran.id')
                 ->where('mata_pelajaran.kdmapel', $kdmapel);
 
-            if ($status == 'Lulus') {
+
+            if ($status == 'Tuntas') {
                 $query->where('nilai', '>=', 80);
             } else {
                 $query->where('nilai', '<', 80);
             }
 
             $data = $query->get();
+
+
 
             return FormatResponse::send(true, $data, "Berhasil mendapatkan data Detail!", 200);
         } catch (\Throwable $th) {
