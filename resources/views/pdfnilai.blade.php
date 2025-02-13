@@ -49,7 +49,7 @@
         }
 
         .mb-5 {
-            margin-bottom: 100px;
+            margin-bottom: 80px;
         }
     </style>
     @php
@@ -106,7 +106,7 @@
     </div>
 
     <div class="text-right">
-        <p>{{ $dataSiswa->idKelas->idGuru->nama }}</p>
+        <p><strong>{{ $dataSiswa->idKelas->idGuru->nama }}</strong></p>
         <p>NIP: {{ $dataSiswa->idKelas->idGuru->nip }}</p>
     </div>
 </body>
