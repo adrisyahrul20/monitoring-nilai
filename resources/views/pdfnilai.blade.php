@@ -49,7 +49,7 @@
         }
 
         .mb-5 {
-            margin-bottom: 80px;
+            margin-bottom: 70px;
         }
 
         .mb-2 {
