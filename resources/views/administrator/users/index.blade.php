@@ -53,8 +53,8 @@
                         <option value="">Pilih Jabatan</option>
                         <option value="admin">Administrator</option>
                         <option value="guru">Guru Wali Kelas</option>
-                        <option value="guru">Orang Tua - Siswa</option>
-                        <option value="guru">Kepala Sekolah</option>
+                        <option value="siswa">Orang Tua - Siswa</option>
+                        <option value="kepsek">Kepala Sekolah</option>
                     </select>
                 </div>
 
