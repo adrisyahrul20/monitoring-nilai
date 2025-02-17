@@ -11,7 +11,9 @@ use App\Models\NilaiModel;
 use App\Models\NilaiSiswaModel;
 use App\Models\SiswaModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class DashboardController extends Controller
 {
@@ -32,23 +34,97 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('administrator.dashboard.index');
+        if(Auth::user()->role === 'siswa') {
+            return redirect()->route('admin.dashboard.statistik', ['siswa' => Auth::user()->idSiswa->nis, 'semester' => 'ganjil']);
+        } elseif(Auth::user()->role === 'admin') {
+            return redirect()->route('admin.siswa.index');
+        } else {
+            $search = null;
+            $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
+            foreach ($dataSiswa as $data) {
+                $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
+                $dataRes = [
+                    'id' => $data->id,
+                    'nis' => $data->nis,
+                    'nama' => $data->nama,
+                    'kdkls' => $data->idKelas->kdkls,
+                    'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
+                    'genap' => $dataNilaiSiswa->genap ?? 0,
+                ];
+                $dataShow[] = $dataRes;
+            }
+            return view('administrator.dashboard.index')->with([
+                'search' => $search,
+                'dataSiswa' => $dataSiswa,
+                'dataShow' => $dataShow ?? [],
+            ]);
+        }
     }
 
-    public function chart()
+    public function search(Request $request)
     {
-        try {
-            $data = NilaiModel::select(
-                'mata_pelajaran.kdmapel as mata_pelajaran', // Add kdmapel
-                'mata_pelajaran.nmmapel',
-                DB::raw('SUM(CASE WHEN nilai >= 80 THEN 1 ELSE 0 END) as lulus'),
-                DB::raw('SUM(CASE WHEN nilai < 80 THEN 1 ELSE 0 END) as tidak_lulus')
-            )
-                ->join('mata_pelajaran', 'monitoring_nilai.idmtpelajaran', '=', 'mata_pelajaran.id')
-                ->groupBy('mata_pelajaran.kdmapel', 'mata_pelajaran.nmmapel') // Include kdmapel in groupBy
-                ->get();
+        $search = $request->input('search');
+        $dataSiswa = $this->siswa
+            ->where(function ($query) use ($search) {
+                $query->where('nis', 'LIKE', '%' . $search . '%')
+                    ->orWhere('nama', 'LIKE', '%' . $search . '%')
+                    ->orWhereHas('idKelas', function ($query) use ($search) {
+                        $query->where('kdkls', 'LIKE', '%' . $search . '%');
+                    });
+            })
+            ->orderBy('id', 'asc')
+            ->get();
+        $dataShow = [];
+        foreach ($dataSiswa as $data) {
+            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
+            $dataRes = [
+                'id' => $data->id,
+                'nis' => $data->nis,
+                'nama' => $data->nama,
+                'kdkls' => $data->idKelas->kdkls,
+                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
+                'genap' => $dataNilaiSiswa->genap ?? 0,
+            ];
+            $dataShow[] = $dataRes;
+        }
+        return view('administrator.dashboard.index')->with([
+            'search' => $search,
+            'dataSiswa' => $dataSiswa,
+            'dataShow' => $dataShow ?? [],
+        ]);
+    }
 
-            return FormatResponse::send(true, $data, "Berhasil mendapatkan data chart!", 200);
+    public function statistik(Request $request)
+    {
+        $siswa = $request->query('siswa');
+        $semester = $request->query('semester');
+        $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+        $namaSiswa = $dataSiswa->nama;
+        return view('administrator.dashboard.statistik')->with([
+            "siswa" => $siswa,
+            "semester" => $semester,
+            "namaSiswa" => $namaSiswa,
+        ]);
+    }
+
+    public function chart(Request $request)
+    {
+        $siswa = $request->query('siswa');
+        $semester = $request->query('semester');
+        try {
+            $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+            $data = NilaiModel::where('idsiswa', $dataSiswa->id)->where('semester', $semester)->get();
+
+            $dataResponse = [];
+            foreach ($data as $list) {
+                $obj = new stdClass;
+                $obj->kdmapel = $list->idMapel->kdmapel;
+                $obj->pelajaran = $list->idMapel->nmmapel;
+                $obj->nilai = $list->nilai;
+                $dataResponse[] = $obj;
+            }
+
+            return FormatResponse::send(true, $dataResponse, "Berhasil mendapatkan data chart!", 200);
         } catch (\Throwable $th) {
             return ErrorHandler::record($th, 'response');
         }

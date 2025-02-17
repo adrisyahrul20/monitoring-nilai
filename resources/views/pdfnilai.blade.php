@@ -4,18 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Nilai {{ $dataSiswa->nama }}</title>
+    <title>Rapor Nilai {{ $dataSiswa->nama }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            margin: 20px;
-            padding: 0;
+        @page {
+            size: A4 potrait;
+            margin-top: 5mm;
+            margin-left: 10mm;
+            margin-right: 10mm;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
+        body {
+            font-family: sans-serif;
         }
 
         table {
@@ -24,8 +23,8 @@
             margin-top: 10px;
         }
 
-        th,
-        td {
+        table.border th,
+        table.border td {
             border: 1px solid black;
             padding: 8px;
             text-align: left;
@@ -35,25 +34,67 @@
             background-color: #f2f2f2;
         }
 
-        .info-table td {
-            border: none;
-            padding: 5px;
+        h4,
+        p {
+            margin: 0;
         }
 
-        .info-table {
-            margin-bottom: 20px;
+        .text-center {
+            text-align: center;
         }
 
         .text-right {
             text-align: right;
         }
 
-        .mb-5 {
+        .pull-right {
+            float: right;
+        }
+
+        .pull-left {
+            float: left;
+        }
+
+        .text-xs {
+            font-size: 12px;
+        }
+
+        .text-sm {
+            font-size: 14px;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: auto;
+        }
+
+        .mb-4 {
+            margin-bottom: 10px;
+        }
+
+        .mb-6 {
+            margin-bottom: 30px;
+        }
+
+        .mb-10 {
             margin-bottom: 70px;
         }
 
-        .mb-2 {
+        .mt-2 {
             margin-top: 20px;
+        }
+
+        .w-sper {
+            width: 75%;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .align-top th,
+        .align-top td {
+            vertical-align: top;
         }
     </style>
     @php
@@ -64,8 +105,25 @@
 </head>
 
 <body>
-    <h2>Nilai Siswa</h2>
-
+    <table class="mb-4">
+        <tr>
+            <td>
+                <img src="{{ public_path('assets/img/logo.png') }}" alt="logo" class="logo-img pull-left" />
+            </td>
+            <td>
+                <h4 class="text-center w-full">PEMERINTAH PROVINSI SUMATERA BARAT</h4>
+                <h4 class="text-center w-full">CABANG DINAS PENDIDIKAN WILAYAH VII</h4>
+                <h4 class="text-center w-full">SMA NEGERI 2 BAYANG</h4>
+                <p class="text-xs text-center">Alamat: Jalan Gr-Panjang-Bayang, Telp.(0756)441069, E-Mail
+                    smanbayang02@gmail.com</p>
+            </td>
+            <td>
+                <img src="{{ public_path('assets/img/tutwurihandayani.png') }}" alt="logo"
+                    class="logo-img pull-right" />
+            </td>
+        </tr>
+    </table>
+    <h3 class="text-center">RAPOR ASESMEN TENGAH SEMESTER</h3>
     <table class="info-table">
         <tbody>
             <tr>
@@ -83,7 +141,7 @@
         </tbody>
     </table>
 
-    <table>
+    <table class="border">
         <thead>
             <tr>
                 <th>No</th>
@@ -104,8 +162,8 @@
             @endforeach
         </tbody>
     </table>
-    <div class="text-right mb-5 mt-2">
-        <p>Kab. Pesisir Selatan, {{ Carbon::now()->translatedFormat('d F Y') }}</p>
+    <div class="text-right mb-10 mt-2">
+        <p>Kab. Pesisir Selatan, {{ Carbon::now()->timezone('Asia/Jakarta')->translatedFormat('d F Y') }}</p>
         <p>Wali Kelas,</p>
     </div>
 

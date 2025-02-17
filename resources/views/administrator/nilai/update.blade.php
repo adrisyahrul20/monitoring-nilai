@@ -2,7 +2,8 @@
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 dark:text-white">
         <div class="flex flex-col md:flex-row text-center justify-between items-center gap-4">
             <div class="flex flex-col text-left">
-                <h1 class="text-xl md:text-2xl font-semibold capitalize">Nama Siswa : {{ strtolower($dataSiswa->nama ?? '') }}
+                <h1 class="text-xl md:text-2xl font-semibold capitalize">Ubah Nilai Rapor</h1>
+                <h1 class="text-base md:text-lg font-semibold capitalize">Nama Siswa : {{ strtolower($dataSiswa->nama ?? '') }}
                 </h1>
                 <p class="text-gray-500">NIS: {{ strtolower($dataSiswa->nis ?? '') }}</p>
             </div>

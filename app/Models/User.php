@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'idsiswa',
     ];
 
     /**
@@ -44,5 +45,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function idSiswa()
+    {
+        return $this->belongsTo(SiswaModel::class, 'idsiswa', 'id');
     }
 }

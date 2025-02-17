@@ -11,6 +11,7 @@ use App\Models\NilaiModel;
 use App\Models\NilaiSiswaModel;
 use App\Models\SiswaModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use stdClass;
@@ -35,25 +36,29 @@ class NilaiController extends Controller
 
     public function index()
     {
-        $search = null;
-        $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
-        foreach ($dataSiswa as $data) {
-            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
-            $dataRes = [
-                'id' => $data->id,
-                'nis' => $data->nis,
-                'nama' => $data->nama,
-                'kdkls' => $data->idKelas->kdkls,
-                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
-                'genap' => $dataNilaiSiswa->genap ?? 0,
-            ];
-            $dataShow[] = $dataRes;
+        if (Auth::user()->role !== 'siswa') {
+            $search = null;
+            $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
+            foreach ($dataSiswa as $data) {
+                $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
+                $dataRes = [
+                    'id' => $data->id,
+                    'nis' => $data->nis,
+                    'nama' => $data->nama,
+                    'kdkls' => $data->idKelas->kdkls,
+                    'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
+                    'genap' => $dataNilaiSiswa->genap ?? 0,
+                ];
+                $dataShow[] = $dataRes;
+            }
+            return view('administrator.nilai.index')->with([
+                'search' => $search,
+                'dataSiswa' => $dataSiswa,
+                'dataShow' => $dataShow ?? [],
+            ]);
+        } else {
+            return redirect()->route('admin.nilai.nilai', ['siswa' => Auth::user()->idSiswa->nis, 'semester' => 'ganjil']);
         }
-        return view('administrator.nilai.index')->with([
-            'search' => $search,
-            'dataSiswa' => $dataSiswa,
-            'dataShow' => $dataShow ?? [],
-        ]);
     }
 
     public function search(Request $request)
@@ -94,8 +99,8 @@ class NilaiController extends Controller
         $semester = $request->input('semester');
         $siswa = $request->input('siswa');
 
-        $dataSiswa = $this->siswa->where('id', $siswa)->first();
-        $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
+        $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+        $dataNilai = $this->table->where('idsiswa', $dataSiswa->id)->where('semester', $semester)->get();
         return view('administrator.nilai.nilai')->with([
             'dataNilai' => $dataNilai,
             'dataSiswa' => $dataSiswa,
@@ -212,8 +217,8 @@ class NilaiController extends Controller
         $semester = $request->input('semester');
         $siswa = $request->input('siswa');
 
-        $dataSiswa = $this->siswa->where('id', $siswa)->first();
-        $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
+        $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+        $dataNilai = $this->table->where('idsiswa', $dataSiswa->id)->where('semester', $semester)->get();
         return view('administrator.nilai.update')->with([
             'dataNilai' => $dataNilai,
             'dataSiswa' => $dataSiswa,
@@ -258,10 +263,10 @@ class NilaiController extends Controller
 
             $checkSiswa = $this->siswa->where('id', $request->idsiswa)->first();
 
-            return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->id, 'semester' => $request->semester])->with('success', 'Nilai siswa ' . $checkSiswa->nama . ' sudah diinput.');
+            return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->nis, 'semester' => $request->semester])->with('success', 'Nilai siswa ' . $checkSiswa->nama . ' sudah diinput.');
         } catch (\Throwable $th) {
             $checkSiswa = $this->siswa->where('id', $request->idsiswa)->first();
-            return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->id, 'semester' => $request->semester])->with('error', $th->getMessage());
+            return redirect()->route('admin.nilai.nilai', ['siswa' => $checkSiswa->nis, 'semester' => $request->semester])->with('error', $th->getMessage());
         }
     }
 }

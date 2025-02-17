@@ -13,8 +13,8 @@ class PDFController extends Controller
     {
         $siswa = $request->query('siswa');
         $semester = $request->query('semester');
-        $dataSiswa = SiswaModel::where('id', $siswa)->first();
-        $dataNilai = NilaiModel::where('idsiswa', $siswa)->where('semester', $semester)->get();
+        $dataSiswa = SiswaModel::where('nis', $siswa)->first();
+        $dataNilai = NilaiModel::where('idsiswa', $dataSiswa->id)->where('semester', $semester)->get();
         $pdf = Pdf::loadView('pdfnilai', compact('dataNilai', 'dataSiswa', 'semester'));
 
         return $pdf->download('Nilai - ' . $dataSiswa->nama . '.pdf');

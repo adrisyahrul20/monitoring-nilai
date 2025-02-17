@@ -2,8 +2,12 @@
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 dark:text-white">
         <div class="flex flex-col md:flex-row text-center justify-between gap-4">
             <h1 class="text-xl md:text-2xl font-semibold">Data Pengguna</h1>
-            <button class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2 mb-4"
-                id="addNewDataButton">Registrasi Pengguna</button>
+            <div class="flex gap-4">
+                <button class="btn btn-success bg-blue-500 text-white rounded-lg px-4 py-2 mb-4"
+                    id="addNewDataButton1">Registrasi Wali Murid</button>
+                <button class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2 mb-4"
+                    id="addNewDataButton">Registrasi Pengguna</button>
+            </div>
         </div>
         <table class="min-w-full bg-white divide-y divide-gray-200 border" id="dataTables">
             <thead class="bg-gray-50">
@@ -22,11 +26,54 @@
             <tbody class="bg-white text-black divide-y divide-gray-200 text-center"></tbody>
         </table>
     </div>
+
+    <div id="dataModal1" class="fixed inset-0 flex items-center justify-center z-[1100] hidden bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto p-6">
+            <h2 id="modalTitle1" class="text-2xl font-semibold mb-4"></h2>
+            <form id="dataForm1" autocomplete="off">
+                <input type="hidden" id="recordId1" name="id">
+                <input type="hidden" id="method1" name="method">
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="name" class="block text-gray-700">Nama</label>
+                    <input type="text" id="name1" name="name" class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="email" class="block text-gray-700">Email</label>
+                    <input type="email" id="email1" name="email" class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div id="pass1" class="flex flex-col w-full mb-2">
+                    <label for="phone_number" class="block text-gray-700">Password</label>
+                    <input type="password" id="password1" maxlength="15" name="password"
+                        class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div class="flex flex-col w-full mb-4">
+                    <label for="idsiswa" class="block text-gray-700">Orang tua dari</label>
+                    <select id="idsiswa" name="idsiswa" class="border shadow-sm rounded-md py-2 px-3">
+                        <option value="">Pilih Siswa</option>
+                        @foreach ($dataSiswa as $list)
+                            <option value="{{ $list->id }}">{{ $list->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Modal Buttons -->
+                <div class="flex justify-end">
+                    <button type="button" id="close-modal1"
+                        class="bg-gray-500 text-white rounded-lg px-4 py-2 mr-2">Batal</button>
+                    <button type="button" id="save1"
+                        class="bg-blue-500 text-white rounded-lg px-4 py-2">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="dataModal" class="fixed inset-0 flex items-center justify-center z-[1100] hidden bg-black bg-opacity-50">
-        <!-- Modal Content -->
         <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto p-6">
             <h2 id="modalTitle" class="text-2xl font-semibold mb-4"></h2>
-            <!-- Form Inputs -->
             <form id="dataForm" autocomplete="off">
                 <input type="hidden" id="recordId" name="id">
                 <input type="hidden" id="method" name="method">
@@ -144,8 +191,20 @@
                 $('#pass').removeClass('hidden');
             });
 
+            $('#addNewDataButton1').click(function() {
+                $('#modalTitle1').text('Registrasi Pengguna');
+                $('#dataModal1').removeClass('hidden');
+                $("#method1").val('POST');
+                $('#dataForm1')[0].reset();
+                $('#pass1').removeClass('hidden');
+            });
+
             $('#close-modal').click(function() {
                 $('#dataModal').addClass('hidden');
+            });
+
+            $('#close-modal1').click(function() {
+                $('#dataModal1').addClass('hidden');
             });
 
             $.ajaxSetup({
@@ -183,6 +242,35 @@
                 });
             });
 
+            $('#save1').click(function(e) {
+                e.preventDefault();
+                $(this).prop('disabled', true).html(
+                    '<span class="mr-2">Simpan</span><i class="fa fa-spinner fa-pulse fa-fw"></i>');
+
+                const method = $("#method1").val() === 'PUT' ? 'PUT' :
+                    'POST';
+                const url = method === "POST" ? "{{ route('admin.user.store.siswa') }}" :
+                    "{{ route('admin.user.update.siswa') }}";
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: $("#dataForm1").serialize(),
+                    success: function(res) {
+                        success(res.message);
+                        $('#dataTables').DataTable().ajax.reload();
+                        $('#dataForm1')[0].reset();
+                        $('#dataModal1').addClass('hidden');
+                    },
+                    error: function(err) {
+                        handleError(err);
+                    },
+                    complete: function() {
+                        $('#save1').prop('disabled', false).text('Simpan');
+                    }
+                });
+            });
+
             $('table#dataTables tbody').on('click', 'td button', function(e) {
                 const action = $(this).attr("data-mode");
                 const data = $('#dataTables').DataTable().row($(this).parents('tr')).data();
@@ -190,20 +278,33 @@
 
                 if (action === 'edit') {
                     populateForm(data);
+                    $("#method1").val('PUT');
+                    $('#pass1').addClass('hidden');
                     $("#method").val('PUT');
                     $('#pass').addClass('hidden');
-                    $('#dataModal').removeClass('hidden');
+                    if (data.role === "siswa") {
+                        $('#dataModal1').removeClass('hidden');
+                    } else {
+                        $('#dataModal').removeClass('hidden');
+                    }
                 } else {
                     $('#pass').removeClass('hidden');
+                    $('#pass1').removeClass('hidden');
                     confirmDelete(data.id);
                 }
             });
 
             function populateForm(data) {
-                $("#recordId").val(data.id);
-                $("#name").val(data.name);
-                $("#email").val(data.email);
-                $("#role").val(data.role);
+                const isSiswa = data.role === 'siswa';
+
+                $(`#recordId${isSiswa ? '1' : ''}`).val(data.id);
+                $(`#name${isSiswa ? '1' : ''}`).val(data.name);
+                $(`#email${isSiswa ? '1' : ''}`).val(data.email);
+                if(isSiswa) {
+                    $(`#idsiswa`).val(data.idsiswa);
+                } else {
+                    $(`#role`).val(data.role);
+                }
             }
 
             function confirmDelete(id) {

@@ -30,12 +30,7 @@
 
     <div class="max-w-7xl mx-auto text-black/80 py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row text-center justify-between gap-4">
-            <h1 class="text-xl md:text-2xl font-semibold dark:text-white">Nilai Siswa</h1>
-            <div class="flex gap-4 items-center">
-                <button onclick="window.history.back()" class="bg-yellow-500 text-black px-4 py-2 rounded-lg">
-                    Kembali
-                </button>
-            </div>
+            <h1 class="text-xl md:text-2xl font-semibold dark:text-white">Rapor Asesmen Tengah Semester</h1>
         </div>
         <div class="flex justify-between items-center">
             <div class="flex flex-col dark:text-white">

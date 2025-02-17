@@ -12,12 +12,14 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('admin.dashboard.index')" :active="request()->routeIs('admin.dashboard*')">
-                        Statistik Nilai
-                    </x-nav-link>
-                    <x-nav-link :href="route('admin.nilai.index')" :active="request()->routeIs('admin.nilai*')">
-                        Nilai Siswa
-                    </x-nav-link>
+                    @if (Auth::user()->role !== 'admin')
+                        <x-nav-link :href="route('admin.dashboard.index')" :active="request()->routeIs('admin.dashboard*')">
+                            Statistik Nilai
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.nilai.index')" :active="request()->routeIs('admin.nilai*')">
+                            {{ Auth::user()->role !== 'siswa' ? 'Nilai Siswa' : 'RAPOR ' . Auth::user()->idSiswa->nama }}
+                        </x-nav-link>
+                    @endif
                     @if (Auth::user()->role === 'admin')
                         <x-nav-link :href="route('admin.siswa.index')" :active="request()->routeIs('admin.siswa.index')">
                             Data Siswa

@@ -12,12 +12,12 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('stat-page')" :active="request()->routeIs('admin.dashboard*')">
+                    {{-- <x-nav-link :href="route('stat-page')" :active="request()->routeIs('admin.dashboard*')">
                         Statistik Nilai
                     </x-nav-link>
                     <x-nav-link :href="route('raport-page')" :active="request()->routeIs('admin.nilai*')">
                         Nilai Raport Siswa
-                    </x-nav-link>
+                    </x-nav-link> --}}
                 </div>
             </div>
 

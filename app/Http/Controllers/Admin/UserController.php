@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\ErrorHandler;
 use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
+use App\Models\SiswaModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,15 +15,20 @@ use Yajra\DataTables\DataTables;
 class UserController extends Controller
 {
     protected $table;
+    protected $siswa;
 
-    public function __construct(User $table)
+    public function __construct(User $table, SiswaModel $siswa)
     {
         $this->table = $table;
+        $this->siswa = $siswa;
     }
 
     public function index()
     {
-        return view('administrator.users.index');
+        $dataSiswa = $this->siswa->get();
+        return view('administrator.users.index')->with([
+            "dataSiswa" => $dataSiswa
+        ]);
     }
 
     public function datatable()
@@ -32,8 +38,12 @@ class UserController extends Controller
             'name',
             'email',
             'role',
+            'idsiswa',
         ]))
             ->addIndexColumn()
+            ->addColumn('siswa', function ($row) {
+                return $row->idSiswa->nama ?? '-';
+            })
             ->addColumn('roleCast', function ($row) {
                 $roles = [
                     'admin' => 'Administrator',
@@ -41,7 +51,8 @@ class UserController extends Controller
                     'siswa' => 'Orang Tua - Siswa',
                     'kepsek' => 'Kepala Sekolah',
                 ];
-                return $roles[$row->role] ?? 'Error';
+                return $row->role === 'admin' ? 'Administrator' : ($row->role === 'guru' ? 'Guru Wali Kelas' : ($row->role === 'kepsek' ? 'Kepala Sekolah' :
+                            'Orang Tua - ' . $row->idSiswa->nama));
             })
             ->addColumn('action', function ($row) {
                 return '
@@ -85,6 +96,34 @@ class UserController extends Controller
         }
     }
 
+    public function storeSiswa(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email',
+                'password' => 'required',
+                'idsiswa' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $store = new $this->table;
+            $store->name = $request->name;
+            $store->email = $request->email;
+            $store->password = bcrypt($request->password);
+            $store->role = 'siswa';
+            $store->idsiswa = $request->idsiswa;
+            $store->save();
+
+            return FormatResponse::send(true, ['record' => $store, 'act' => 'store'], "Registrasi berhasil!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
+        }
+    }
+
     public function update(Request $request)
     {
         try {
@@ -103,6 +142,32 @@ class UserController extends Controller
             $store->name = $request->name;
             $store->email = $request->email;
             $store->role = $request->role;
+            $store->save();
+
+            return FormatResponse::send(true, ['record' => $store, 'act' => 'update'], "Ubah data pengguna berhasil!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
+        }
+    }
+
+    public function updateSiswa(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255',
+                'idsiswa' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $store = $this->table->find($request->id);
+            $store->name = $request->name;
+            $store->email = $request->email;
+            $store->idsiswa = $request->idsiswa;
             $store->save();
 
             return FormatResponse::send(true, ['record' => $store, 'act' => 'update'], "Ubah data pengguna berhasil!", 200);

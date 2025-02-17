@@ -13,22 +13,22 @@ use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('stat-page');
-Route::get('/raport', [LandingController::class, 'raport'])->name('raport-page');
-Route::post('/search', [LandingController::class, 'search'])->name('home-search');
-Route::get('/nilai', [LandingController::class, 'nilai'])->name('home-nilai');
+Route::get('/raport', [LandingController::class, 'raport'])->name('rapor-page');
+Route::get('/statistik', [LandingController::class, 'statistik'])->name('statistik-page');
+Route::get('/chart', [LandingController::class, 'chart'])->name('statistik-chart');
 Route::get('/export-pdf', [PDFController::class, 'exportPDF'])->name('export-pdf');
 
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::prefix('dashboard')->name('dashboard.')->controller(DashboardController::class)->group(function () {
-        Route::get('/chart', 'chart')->name('chart');
-        Route::get('/chart/detail', 'detail')->name('chart.detail');
-    });
+Route::prefix('home')->name('home.')->controller(DashboardController::class)->group(function () {
+    Route::get('/chart', 'chart')->name('chart');
 });
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::prefix('dashboard')->name('dashboard.')->controller(DashboardController::class)->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::post('/search', 'search')->name('search');
+        Route::get('/statistik', 'statistik')->name('statistik');
+        Route::get('/chart', 'chart')->name('chart');
     });
     Route::prefix('nilai')->name('nilai.')->controller(NilaiController::class)->group(function () {
         Route::get('/', 'index')->name('index');
@@ -90,7 +90,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/data-table', 'datatable')->name('datatable');
         Route::post('/store', 'store')->name('store');
+        Route::post('/store/siswa', 'storeSiswa')->name('store.siswa');
         Route::put('/update', 'update')->name('update');
+        Route::put('/update/siswa', 'updateSiswa')->name('update.siswa');
         Route::delete('/delete', 'destroy')->name('destroy');
     });
 });

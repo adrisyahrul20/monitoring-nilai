@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Guest;
 
+use App\Helper\ErrorHandler;
+use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
 use App\Models\KelasModel;
 use App\Models\MataPelajaranModel;
@@ -9,6 +11,7 @@ use App\Models\NilaiModel;
 use App\Models\NilaiSiswaModel;
 use App\Models\SiswaModel;
 use Illuminate\Http\Request;
+use stdClass;
 
 class LandingController extends Controller
 {
@@ -29,76 +32,57 @@ class LandingController extends Controller
 
     public function index()
     {
-        return view('statistik');
+        return view('index');
     }
 
-    public function raport()
-    {
-        $search = null;
-        $dataSiswa = $this->siswa->orderBy('id', 'asc')->get();
-        foreach ($dataSiswa as $data) {
-            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
-            $dataRes = [
-                'id' => $data->id,
-                'nis' => $data->nis,
-                'nama' => $data->nama,
-                'kdkls' => $data->idKelas->kdkls,
-                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
-                'genap' => $dataNilaiSiswa->genap ?? 0,
-            ];
-            $dataShow[] = $dataRes;
-        }
-        return view('guest')->with([
-            'search' => $search,
-            'dataShow' => $dataShow ?? []
-        ]);
-    }
-
-    public function search(Request $request)
-    {
-        $search = $request->input('search');
-        $dataSiswa = $this->siswa
-            ->where(function ($query) use ($search) {
-                $query->where('nis', 'LIKE', '%' . $search . '%')
-                    ->orWhere('nama', 'LIKE', '%' . $search . '%')
-                    ->orWhereHas('idKelas', function ($query) use ($search) {
-                        $query->where('kdkls', 'LIKE', '%' . $search . '%');
-                    });
-            })
-            ->orderBy('id', 'asc')
-            ->get();
-        $dataShow = [];
-        foreach ($dataSiswa as $data) {
-            $dataNilaiSiswa = $this->nilaiSiswa->where('idsiswa', $data->id)->where('tingkat_kelas', $data->idKelas->tingkat_kelas)->first();
-            $dataRes = [
-                'id' => $data->id,
-                'nis' => $data->nis,
-                'nama' => $data->nama,
-                'kdkls' => $data->idKelas->kdkls,
-                'ganjil' => $dataNilaiSiswa->ganjil ?? 0,
-                'genap' => $dataNilaiSiswa->genap ?? 0,
-            ];
-            $dataShow[] = $dataRes;
-        }
-        return view('guest')->with([
-            'search' => $search,
-            'dataSiswa' => $dataSiswa,
-            'dataShow' => $dataShow ?? [],
-        ]);
-    }
-
-    public function nilai(Request $request)
+    public function raport(Request $request)
     {
         $semester = $request->input('semester');
         $siswa = $request->input('siswa');
 
-        $dataSiswa = $this->siswa->where('id', $siswa)->first();
-        $dataNilai = $this->table->where('idsiswa', $siswa)->where('semester', $semester)->get();
-        return view('guestnilai')->with([
+        $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+        $dataNilai = $this->table->where('idsiswa', $dataSiswa->id)->where('semester', $semester)->get();
+        return view('guestrapor')->with([
             'dataNilai' => $dataNilai,
             'dataSiswa' => $dataSiswa,
             'semester' => $semester,
             'siswa' => $siswa,
         ]);
+    }
+
+    public function statistik(Request $request)
+    {
+        $siswa = $request->query('siswa');
+        $semester = $request->query('semester');
+        $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+        $namaSiswa = $dataSiswa->nama;
+        return view('gueststatistik')->with([
+            "siswa" => $siswa,
+            "semester" => $semester,
+            "namaSiswa" => $namaSiswa,
+        ]);
+    }
+
+    public function chart(Request $request)
+    {
+        $siswa = $request->query('siswa');
+        $semester = $request->query('semester');
+        try {
+            $dataSiswa = $this->siswa->where('nis', $siswa)->first();
+            $data = NilaiModel::where('idsiswa', $dataSiswa->id)->where('semester', $semester)->get();
+
+            $dataResponse = [];
+            foreach ($data as $list) {
+                $obj = new stdClass;
+                $obj->kdmapel = $list->idMapel->kdmapel;
+                $obj->pelajaran = $list->idMapel->nmmapel;
+                $obj->nilai = $list->nilai;
+                $dataResponse[] = $obj;
+            }
+
+            return FormatResponse::send(true, $dataResponse, "Berhasil mendapatkan data chart!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
+        }
     }
 }

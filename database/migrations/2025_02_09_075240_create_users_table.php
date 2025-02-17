@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'guru', 'siswa', 'kepsek'])->default('admin');
+            $table->foreignId('idsiswa')->nullable()->constrained('siswa')->onDelete('cascade');
             $table->timestamps();
         });
 
