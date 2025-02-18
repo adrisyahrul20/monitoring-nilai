@@ -21,7 +21,7 @@
         integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" type="text/css" />
     @php
         use Carbon\Carbon;
 
@@ -48,11 +48,11 @@
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 dark:text-white/50">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 dark:text-white/50 bg-sekolah">
     @include('layouts.guestnav')
 
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col text-center items-center justify-center min-h-[calc(100dvh-200px)] gap-4">
+        <div class="flex flex-col text-center items-center min-h-[calc(100dvh-200px)] gap-4">
             <x-login-logo class="block w-24 h-auto fill-current text-gray-800 dark:text-gray-200" />
             <div class="flex flex-col">
                 <h1 class="text-xl md:text-2xl font-semibold dark:text-white">Selamat datang di aplikasi monitoring

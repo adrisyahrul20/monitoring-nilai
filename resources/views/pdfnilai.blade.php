@@ -162,15 +162,47 @@
             @endforeach
         </tbody>
     </table>
-    <div class="text-right mb-10 mt-2">
-        <p>Kab. Pesisir Selatan, {{ Carbon::now()->timezone('Asia/Jakarta')->translatedFormat('d F Y') }}</p>
-        <p>Wali Kelas,</p>
-    </div>
-
-    <div class="text-right">
-        <p><strong>{{ $dataSiswa->idKelas->idGuru->nama }}</strong></p>
-        <p>NIP: {{ $dataSiswa->idKelas->idGuru->nip }}</p>
-    </div>
+    <table class="info-table">
+        <tbody>
+            <tr>
+                <td>
+                    <div class="text-left mb-10 mt-2">
+                        <p>Diketahui oleh:</p>
+                        <p>Orang Tua/Wali</p>
+                    </div>
+                
+                    <div class="text-left">
+                        <p>___________________</p>
+                    </div>
+                </td>
+                <td>
+                    <div class="text-right mb-10 mt-2">
+                        <p>Kab. Pesisir Selatan, {{ Carbon::now()->timezone('Asia/Jakarta')->translatedFormat('d F Y') }}</p>
+                        <p>Wali Kelas,</p>
+                    </div>
+                
+                    <div class="text-right">
+                        <p><strong>{{ $dataSiswa->idKelas->idGuru->nama }}</strong></p>
+                        <p>NIP: {{ $dataSiswa->idKelas->idGuru->nip }}</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="text-center mb-10 mt-2">
+                        <p>Mengetahui:</p>
+                        <p>Kepala Sekolah,</p>
+                    </div>
+                
+                    <div class="text-center">
+                        <p>Hulta Muhammadi, M. Pd.</p>
+                        <p>NIP: 19671102 199702 1 001</p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
 </body>
 
 </html>
