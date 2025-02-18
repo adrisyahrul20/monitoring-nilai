@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'idsiswa',
+        'idkelas',
     ];
 
     /**
@@ -50,5 +51,10 @@ class User extends Authenticatable
     public function idSiswa()
     {
         return $this->belongsTo(SiswaModel::class, 'idsiswa', 'id');
+    }
+
+    public function idKelas()
+    {
+        return $this->belongsTo(KelasModel::class, 'idkelas', 'id');
     }
 }

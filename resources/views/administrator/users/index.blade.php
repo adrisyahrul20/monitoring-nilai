@@ -3,6 +3,8 @@
         <div class="flex flex-col md:flex-row text-center justify-between gap-4">
             <h1 class="text-xl md:text-2xl font-semibold">Data Pengguna</h1>
             <div class="flex gap-4">
+                <button class="btn btn-success bg-yellow-500 text-black rounded-lg px-4 py-2 mb-4"
+                    id="addNewDataButton2">Registrasi Guru Walas</button>
                 <button class="btn btn-success bg-blue-500 text-white rounded-lg px-4 py-2 mb-4"
                     id="addNewDataButton1">Registrasi Wali Murid</button>
                 <button class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2 mb-4"
@@ -25,6 +27,50 @@
             </thead>
             <tbody class="bg-white text-black divide-y divide-gray-200 text-center"></tbody>
         </table>
+    </div>
+
+    <div id="dataModal2" class="fixed inset-0 flex items-center justify-center z-[1100] hidden bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto p-6">
+            <h2 id="modalTitle2" class="text-2xl font-semibold mb-4"></h2>
+            <form id="dataForm2" autocomplete="off">
+                <input type="hidden" id="recordId2" name="id">
+                <input type="hidden" id="method2" name="method">
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="name" class="block text-gray-700">Nama</label>
+                    <input type="text" id="name2" name="name" class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div class="flex flex-col w-full mb-2">
+                    <label for="email" class="block text-gray-700">Email</label>
+                    <input type="email" id="email2" name="email" class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div id="pass2" class="flex flex-col w-full mb-2">
+                    <label for="phone_number" class="block text-gray-700">Password</label>
+                    <input type="password" id="password2" maxlength="15" name="password"
+                        class="border shadow-sm rounded-md py-2 px-3">
+                </div>
+
+                <div class="flex flex-col w-full mb-4">
+                    <label for="idkelas" class="block text-gray-700">Wali kelas</label>
+                    <select id="idkelas" name="idkelas" class="border shadow-sm rounded-md py-2 px-3">
+                        <option value="">Pilih Kelas</option>
+                        @foreach ($dataKelas as $list)
+                            <option value="{{ $list->id }}">{{ $list->kdkls }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Modal Buttons -->
+                <div class="flex justify-end">
+                    <button type="button" id="close-modal2"
+                        class="bg-gray-500 text-white rounded-lg px-4 py-2 mr-2">Batal</button>
+                    <button type="button" id="save2"
+                        class="bg-blue-500 text-white rounded-lg px-4 py-2">Simpan</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="dataModal1" class="fixed inset-0 flex items-center justify-center z-[1100] hidden bg-black bg-opacity-50">
@@ -80,12 +126,14 @@
 
                 <div class="flex flex-col w-full mb-2">
                     <label for="name" class="block text-gray-700">Nama</label>
-                    <input type="text" id="name" name="name" class="border shadow-sm rounded-md py-2 px-3">
+                    <input type="text" id="name" name="name"
+                        class="border shadow-sm rounded-md py-2 px-3">
                 </div>
 
                 <div class="flex flex-col w-full mb-2">
                     <label for="email" class="block text-gray-700">Email</label>
-                    <input type="email" id="email" name="email" class="border shadow-sm rounded-md py-2 px-3">
+                    <input type="email" id="email" name="email"
+                        class="border shadow-sm rounded-md py-2 px-3">
                 </div>
 
                 <div id="pass" class="flex flex-col w-full mb-2">
@@ -199,12 +247,24 @@
                 $('#pass1').removeClass('hidden');
             });
 
+            $('#addNewDataButton2').click(function() {
+                $('#modalTitle2').text('Registrasi Pengguna');
+                $('#dataModal2').removeClass('hidden');
+                $("#method2").val('POST');
+                $('#dataForm2')[0].reset();
+                $('#pass2').removeClass('hidden');
+            });
+
             $('#close-modal').click(function() {
                 $('#dataModal').addClass('hidden');
             });
 
             $('#close-modal1').click(function() {
                 $('#dataModal1').addClass('hidden');
+            });
+
+            $('#close-modal2').click(function() {
+                $('#dataModal2').addClass('hidden');
             });
 
             $.ajaxSetup({
@@ -271,6 +331,35 @@
                 });
             });
 
+            $('#save2').click(function(e) {
+                e.preventDefault();
+                $(this).prop('disabled', true).html(
+                    '<span class="mr-2">Simpan</span><i class="fa fa-spinner fa-pulse fa-fw"></i>');
+
+                const method = $("#method2").val() === 'PUT' ? 'PUT' :
+                    'POST';
+                const url = method === "POST" ? "{{ route('admin.user.store.guru') }}" :
+                    "{{ route('admin.user.update.guru') }}";
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: $("#dataForm2").serialize(),
+                    success: function(res) {
+                        success(res.message);
+                        $('#dataTables').DataTable().ajax.reload();
+                        $('#dataForm2')[0].reset();
+                        $('#dataModal2').addClass('hidden');
+                    },
+                    error: function(err) {
+                        handleError(err);
+                    },
+                    complete: function() {
+                        $('#save2').prop('disabled', false).text('Simpan');
+                    }
+                });
+            });
+
             $('table#dataTables tbody').on('click', 'td button', function(e) {
                 const action = $(this).attr("data-mode");
                 const data = $('#dataTables').DataTable().row($(this).parents('tr')).data();
@@ -278,11 +367,15 @@
 
                 if (action === 'edit') {
                     populateForm(data);
+                    $("#method2").val('PUT');
+                    $('#pass2').addClass('hidden');
                     $("#method1").val('PUT');
                     $('#pass1').addClass('hidden');
                     $("#method").val('PUT');
                     $('#pass').addClass('hidden');
-                    if (data.role === "siswa") {
+                    if (data.role === "guru") {
+                        $('#dataModal2').removeClass('hidden');
+                    } else if (data.role === "siswa") {
                         $('#dataModal1').removeClass('hidden');
                     } else {
                         $('#dataModal').removeClass('hidden');
@@ -290,17 +383,21 @@
                 } else {
                     $('#pass').removeClass('hidden');
                     $('#pass1').removeClass('hidden');
+                    $('#pass2').removeClass('hidden');
                     confirmDelete(data.id);
                 }
             });
 
             function populateForm(data) {
                 const isSiswa = data.role === 'siswa';
+                const isGuru = data.role === 'guru';
 
-                $(`#recordId${isSiswa ? '1' : ''}`).val(data.id);
-                $(`#name${isSiswa ? '1' : ''}`).val(data.name);
-                $(`#email${isSiswa ? '1' : ''}`).val(data.email);
-                if(isSiswa) {
+                $(`#recordId${isSiswa ? '1' : isGuru ? '2' : ''}`).val(data.id);
+                $(`#name${isSiswa ? '1' : isGuru ? '2' : ''}`).val(data.name);
+                $(`#email${isSiswa ? '1' : isGuru ? '2' : ''}`).val(data.email);
+                if (isGuru) {
+                    $(`#idkelas`).val(data.idkelas);
+                } else if (isSiswa) {
                     $(`#idsiswa`).val(data.idsiswa);
                 } else {
                     $(`#role`).val(data.role);

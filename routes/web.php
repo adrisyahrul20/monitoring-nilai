@@ -91,8 +91,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/data-table', 'datatable')->name('datatable');
         Route::post('/store', 'store')->name('store');
         Route::post('/store/siswa', 'storeSiswa')->name('store.siswa');
+        Route::post('/store/guru', 'storeGuru')->name('store.guru');
         Route::put('/update', 'update')->name('update');
         Route::put('/update/siswa', 'updateSiswa')->name('update.siswa');
+        Route::put('/update/guru', 'updateGuru')->name('update.guru');
         Route::delete('/delete', 'destroy')->name('destroy');
     });
 });

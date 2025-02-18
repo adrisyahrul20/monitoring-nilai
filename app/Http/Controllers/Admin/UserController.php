@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helper\ErrorHandler;
 use App\Helper\FormatResponse;
 use App\Http\Controllers\Controller;
+use App\Models\KelasModel;
 use App\Models\SiswaModel;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,18 +17,22 @@ class UserController extends Controller
 {
     protected $table;
     protected $siswa;
+    protected $kelas;
 
-    public function __construct(User $table, SiswaModel $siswa)
+    public function __construct(User $table, SiswaModel $siswa, KelasModel $kelas)
     {
         $this->table = $table;
         $this->siswa = $siswa;
+        $this->kelas = $kelas;
     }
 
     public function index()
     {
         $dataSiswa = $this->siswa->get();
+        $dataKelas = $this->kelas->get();
         return view('administrator.users.index')->with([
-            "dataSiswa" => $dataSiswa
+            "dataSiswa" => $dataSiswa,
+            "dataKelas" => $dataKelas,
         ]);
     }
 
@@ -39,19 +44,11 @@ class UserController extends Controller
             'email',
             'role',
             'idsiswa',
+            'idkelas',
         ]))
             ->addIndexColumn()
-            ->addColumn('siswa', function ($row) {
-                return $row->idSiswa->nama ?? '-';
-            })
             ->addColumn('roleCast', function ($row) {
-                $roles = [
-                    'admin' => 'Administrator',
-                    'guru' => 'Guru Wali Kelas',
-                    'siswa' => 'Orang Tua - Siswa',
-                    'kepsek' => 'Kepala Sekolah',
-                ];
-                return $row->role === 'admin' ? 'Administrator' : ($row->role === 'guru' ? 'Guru Wali Kelas' : ($row->role === 'kepsek' ? 'Kepala Sekolah' :
+                return $row->role === 'admin' ? 'Administrator' : ($row->role === 'guru' ? 'Guru Wali Kelas - ' . $row->idKelas->kdkls : ($row->role === 'kepsek' ? 'Kepala Sekolah' :
                             'Orang Tua - ' . $row->idSiswa->nama));
             })
             ->addColumn('action', function ($row) {
@@ -124,6 +121,34 @@ class UserController extends Controller
         }
     }
 
+    public function storeGuru(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email',
+                'password' => 'required',
+                'idkelas' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $store = new $this->table;
+            $store->name = $request->name;
+            $store->email = $request->email;
+            $store->password = bcrypt($request->password);
+            $store->role = 'guru';
+            $store->idkelas = $request->idkelas;
+            $store->save();
+
+            return FormatResponse::send(true, ['record' => $store, 'act' => 'store'], "Registrasi berhasil!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
+        }
+    }
+
     public function update(Request $request)
     {
         try {
@@ -168,6 +193,32 @@ class UserController extends Controller
             $store->name = $request->name;
             $store->email = $request->email;
             $store->idsiswa = $request->idsiswa;
+            $store->save();
+
+            return FormatResponse::send(true, ['record' => $store, 'act' => 'update'], "Ubah data pengguna berhasil!", 200);
+        } catch (\Throwable $th) {
+            return ErrorHandler::record($th, 'response');
+        }
+    }
+
+    public function updateGuru(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255',
+                'idkelas' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $store = $this->table->find($request->id);
+            $store->name = $request->name;
+            $store->email = $request->email;
+            $store->idkelas = $request->idkelas;
             $store->save();
 
             return FormatResponse::send(true, ['record' => $store, 'act' => 'update'], "Ubah data pengguna berhasil!", 200);

@@ -29,7 +29,7 @@
                         </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
-                <a href="{{ route('admin.nilai.input.input') }}" class="bg-yellow-500 text-black px-4 py-1 rounded-lg">
+                <a href="{{ route('admin.nilai.index') }}" class="bg-yellow-500 text-black px-4 py-1 rounded-lg">
                     Kembali
                 </a>
             </div>

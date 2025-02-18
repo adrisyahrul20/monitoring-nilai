@@ -18,10 +18,14 @@
                     </a>
                 @endif
                 @if (Auth::user()->role === 'guru')
-                    <a href="{{ route('admin.nilai.input.input') }}"
+                    <a href="{{ route('admin.nilai.input.siswa', ['kelas' => Auth::user()->idkelas, 'semester' => 'ganjil']) }}"
                         class="btn btn-success bg-green-500 text-white rounded-lg px-4 py-2" id="addNewDataButton">Input
                         Nilai
-                        Siswa</a>
+                        Semester Ganjil</a>
+                    <a href="{{ route('admin.nilai.input.siswa', ['kelas' => Auth::user()->idkelas, 'semester' => 'genap']) }}"
+                        class="btn btn-success bg-blue-500 text-white rounded-lg px-4 py-2" id="addNewDataButton">Input
+                        Nilai
+                        Semester Genap</a>
                 @endif
             </div>
         </div>
