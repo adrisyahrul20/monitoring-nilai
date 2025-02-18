@@ -55,9 +55,8 @@
         <div class="flex flex-col text-center items-center min-h-[calc(100dvh-200px)] gap-4">
             <x-login-logo class="block w-24 h-auto fill-current text-gray-800 dark:text-gray-200" />
             <div class="flex flex-col">
-                <h1 class="text-xl md:text-2xl font-semibold text-white shadow-md">Selamat datang di aplikasi monitoring
-                    nilai murid</h1>
-                <h1 class="text-xl md:text-2xl font-semibold text-white shadow-md">SMA NEGERI 2 BAYANG</h1>
+                <h1 class="text-xl md:text-2xl font-semibold text-white shadow-md">Sistem Informasi Monitoring Perkembangan Akademik</h1>
+                <h1 class="text-xl md:text-2xl font-semibold text-white shadow-md">Siswa di SMAN 2 Bayang Berbasis Web</h1>
                 <p class="text-base text-white shadow-md">Silahkan login untuk mengakses aplikasi ini</p>
             </div>
         </div>
