@@ -279,7 +279,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('PKJ1gUInhkHK1m9WLwy6yOk1YsKLl739xdjeJNgi',4,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWFgwbUluMTBKd3FQejV2OEJ6R0NuMFFqeWlvc1pLdHRXWUNoSExKZiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjQ7fQ==',1739825035),('TjgeAjlnjkmaUfCxKarIR1MdbokGtv7DdBrmoBMO',4,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoicUJRV2N3bzFVWmFCQ0ZhU2h4N1U2TFF4Tmo5QUZZU0pZQnhYWWI4NSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NTk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9leHBvcnQtcGRmP3NlbWVzdGVyPWdhbmppbCZzaXN3YT02MDU2Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NDt9',1739825162);
+INSERT INTO `sessions` VALUES ('wCWWniV07Jr7etXPVOs5x4UXobQKefvDF8CNUqkV',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYVRpV2JhNHZIcktUdDNHNnFlUWZBQXdaa0RXTDZ1WXgxSlE5V3NPNCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9uaWxhaSI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==',1739885501);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -332,11 +332,14 @@ CREATE TABLE `users` (
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `role` enum('admin','guru','siswa','kepsek') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin',
   `idsiswa` bigint unsigned DEFAULT NULL,
+  `idkelas` bigint unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `users_idsiswa_foreign` (`idsiswa`),
+  KEY `users_idkelas_foreign_idx` (`idkelas`),
+  CONSTRAINT `users_idkelas_foreign` FOREIGN KEY (`idkelas`) REFERENCES `kelas` (`id`),
   CONSTRAINT `users_idsiswa_foreign` FOREIGN KEY (`idsiswa`) REFERENCES `siswa` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -347,7 +350,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Administrator','administrator@mail.com','$2y$12$Mx8L8VoSoHdgGjVbLnhP0.e8BjmUD/OZk/uepTg9L1t.9U2SCpi9O','admin',NULL,'2025-02-17 08:43:12','2025-02-17 08:43:12'),(2,'Guru Walas','guruwalas@mail.com','$2y$12$KTwy5qzhqAXFM1WA0VANX.Ys76XIh/U.pUqupDjwYMdE97uRVwrye','guru',NULL,'2025-02-17 08:43:12','2025-02-17 08:43:12'),(3,'Kepala Sekolah','kepsek@mail.com','$2y$12$i02l3IKx.evsyVIGfV6gce8g6xY6ZtntYN0.J3XNqEod35XZtkfjq','kepsek',NULL,'2025-02-17 08:43:12','2025-02-17 08:43:12'),(4,'hasanudin','hasanudin@mail.com','$2y$12$kuz41qFqyksVYXo1o.5COegntpgvaCXM2ZGgIn0yEJIpTvQV1.gXi','siswa',4,'2025-02-17 08:51:32','2025-02-17 08:51:32');
+INSERT INTO `users` VALUES (1,'Administrator','administrator@mail.com','$2y$12$Mx8L8VoSoHdgGjVbLnhP0.e8BjmUD/OZk/uepTg9L1t.9U2SCpi9O','admin',NULL,NULL,'2025-02-17 08:43:12','2025-02-17 08:43:12'),(2,'Guru Walas','guruwalas@mail.com','$2y$12$KTwy5qzhqAXFM1WA0VANX.Ys76XIh/U.pUqupDjwYMdE97uRVwrye','guru',NULL,1,'2025-02-17 08:43:12','2025-02-18 06:19:23'),(3,'Kepala Sekolah','kepsek@mail.com','$2y$12$i02l3IKx.evsyVIGfV6gce8g6xY6ZtntYN0.J3XNqEod35XZtkfjq','kepsek',NULL,NULL,'2025-02-17 08:43:12','2025-02-17 08:43:12'),(4,'hasanudin','hasanudin@mail.com','$2y$12$kuz41qFqyksVYXo1o.5COegntpgvaCXM2ZGgIn0yEJIpTvQV1.gXi','siswa',4,NULL,'2025-02-17 08:51:32','2025-02-17 08:51:32');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -368,4 +371,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-18  3:48:06
+-- Dump completed on 2025-02-18 20:34:23
